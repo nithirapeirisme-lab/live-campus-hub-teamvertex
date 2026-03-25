@@ -58,7 +58,7 @@ public class CheckInServiceImpl implements CheckInService {
     }
 
     @Override
-    public List<CheckInDTO> getAllCheckIns() {
+    public List<CheckInDTO> getAllCheckIns(String studentId) {
         return checkInDao.findAll().stream()
                 .map(entity -> new CheckInDTO(entity.getCheckin_id(), entity.getStudent_id(), entity.getLocation_id(), entity.getCheckIn_time()))
                 .toList();

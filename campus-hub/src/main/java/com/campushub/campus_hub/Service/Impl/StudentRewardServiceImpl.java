@@ -32,7 +32,7 @@ public class StudentRewardServiceImpl implements StudentRewardService {
 
     @Override
     public void checkDuplicateReward(String studentId, String reward_Id) {
-        boolean exists = studentRewardDao.existsByIdAndRewardId(studentId, reward_Id);
+        boolean exists = studentRewardDao.existsByIdStudentIdAndIdRewardId(studentId, reward_Id);
 
         if(exists){
             throw new DuplicateRewardException("Student" + studentId + "has already reward " + reward_Id);

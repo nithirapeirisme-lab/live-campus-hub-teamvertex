@@ -2,9 +2,11 @@ package com.campushub.campus_hub.Dao;
 
 import com.campushub.campus_hub.Entity.StudentsClubEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Repository
 public interface StudentsClubDao extends JpaRepository<StudentsClubEntity,String> {
-    Optional<StudentsClubEntity> findByStudentIdAndClubId(String studentId, String clubId);
+    Optional<StudentsClubEntity> findByIdStudentIdAndIdClubId(String studentId, String clubId);
 }

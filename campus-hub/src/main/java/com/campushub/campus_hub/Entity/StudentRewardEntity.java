@@ -18,8 +18,7 @@ import java.time.LocalDateTime;
 @Table(name = "student_reward")
 public class StudentRewardEntity  {
     @EmbeddedId
-    private String student_id;
-    private String reward_id;
+    private StudentRewardId id;
     private LocalDateTime earned_date;
     private int points;
 }

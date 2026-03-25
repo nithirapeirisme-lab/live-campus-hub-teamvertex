@@ -1,8 +1,11 @@
 package com.campushub.campus_hub.Dao;
 
 import com.campushub.campus_hub.Entity.StudentRewardEntity;
+import com.campushub.campus_hub.Entity.StudentRewardId;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface StudentRewardDao extends JpaRepository<StudentRewardEntity,String> {
-    boolean existsByIdAndRewardId(String studentId, String rewardId);
+@Repository
+public interface StudentRewardDao extends JpaRepository<StudentRewardEntity, StudentRewardId> {
+    boolean existsByIdStudentIdAndIdRewardId(String studentId, String rewardId);
 }

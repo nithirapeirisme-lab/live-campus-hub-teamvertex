@@ -20,7 +20,6 @@ import java.util.Optional;
 public class EventServiceImpl implements EventService {
     private final EventDao eventDao;
     private final EntityDTOConversion entityDTOConversion;
-    private final EventService eventService;
 
     @Override
     public void saveEvent(EventDTO event) {

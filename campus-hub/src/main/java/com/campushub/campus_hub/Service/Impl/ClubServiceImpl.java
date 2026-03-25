@@ -38,9 +38,9 @@ public class ClubServiceImpl implements ClubService {
         }
 
         ClubEntity existingClub = foundClub.get();
-        existingClub.setClub_Name(club.getClub_Name());
+        existingClub.setClubName(club.getClubName());
         existingClub.setStatus(club.getStatus());
-        existingClub.setStudent_id(club.getStudent_id());
+
         clubDao.save(existingClub);
 
     }

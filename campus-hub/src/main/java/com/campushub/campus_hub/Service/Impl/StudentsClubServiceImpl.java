@@ -3,6 +3,7 @@ package com.campushub.campus_hub.Service.Impl;
 import com.campushub.campus_hub.DTO.StudentsClubDTO;
 import com.campushub.campus_hub.Dao.StudentsClubDao;
 import com.campushub.campus_hub.Entity.StudentsClubEntity;
+import com.campushub.campus_hub.Entity.StudentsClubId;
 import com.campushub.campus_hub.Exceptions.StudentClubNotFoundException;
 import com.campushub.campus_hub.Service.StudentsClubService;
 import com.campushub.campus_hub.util.EntityDTOConversion;
@@ -27,19 +28,18 @@ public class StudentsClubServiceImpl implements StudentsClubService {
     }
 
     @Override
-    public void updateStudentsClub(String student_id, String Club_id) {
-        Optional<StudentsClubEntity> sClubs = studentsClubDao.findByStudentIdAndClubId(student_id, Club_id );
+    public void updateStudentsClub(String studentId, String ClubId) {
+        Optional<StudentsClubEntity> sClubs = studentsClubDao.findByIdStudentIdAndIdClubId(studentId, ClubId );
         if(!sClubs.isPresent()) {
             throw new StudentClubNotFoundException("Student's club not found.");
         }
-        sClubs.get().setClub_id(Club_id);
-        sClubs.get().setStudent_id(student_id);
+        sClubs.get().setId(new StudentsClubId());
 
     }
 
     @Override
     public void deleteStudentsClub(StudentsClubDTO studentsClub) {
-        Optional<StudentsClubEntity> sClubs = studentsClubDao.findByStudentIdAndClubId(studentsClub.getStudent_id(), studentsClub.getClub_id());
+        Optional<StudentsClubEntity> sClubs = studentsClubDao.findByIdStudentIdAndIdClubId(studentsClub.getStudent_id(), studentsClub.getClub_id());
         if(!sClubs.isPresent()) {
             throw new StudentClubNotFoundException("Student's club not found.");
         }

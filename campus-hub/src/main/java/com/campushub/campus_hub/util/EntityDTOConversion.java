@@ -109,6 +109,7 @@ public class EntityDTOConversion {
         return modelMapper.map(studentReward, StudentRewardDTO.class);
     }
     public StudentRewardEntity toStudentRewardEntity(StudentRewardDTO studentReward) {
+
         return modelMapper.map(studentReward, StudentRewardEntity.class);
     }
     public List<StudentRewardDTO> toStudentRewardDTOList(List<StudentRewardEntity> studentRewards) {

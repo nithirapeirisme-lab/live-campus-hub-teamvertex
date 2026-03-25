@@ -28,12 +28,12 @@ public class LocationServiceImpl implements LocationService {
     }
 
     @Override
-    public void updateLocation(String location_id, String location_name) {
+    public void updateLocation(String location_id, LocationDTO location) {
         Optional<LocationEntity> foundLocation = locationDao.findById(location_id);
         if(!foundLocation.isPresent()) {
             throw new LocationNotFoundException("Location Not found.");
         }
-        foundLocation.get().setLocation_name(location_name);
+        foundLocation.get().setLocation_name(location.getLocation_name());
 
     }
 

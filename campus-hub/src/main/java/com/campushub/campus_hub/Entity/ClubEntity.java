@@ -1,11 +1,13 @@
 package com.campushub.campus_hub.Entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,8 +17,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "clubs")
 public class ClubEntity {
     @Id
-    private String club_id;
-    private String student_id;
-    private String club_Name;
+    private String clubId;
+
+    @Column(name= "club_name")
+    private String clubName;
     private Boolean status;
 }
