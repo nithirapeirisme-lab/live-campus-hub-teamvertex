@@ -172,7 +172,9 @@ INSERT INTO `students` (`student_id`, `student_pwd`, `first_name`, `last_name`, 
 
 CREATE TABLE `students_club` (
   `student_id` varchar(10) NOT NULL,
-  `club_id` varchar(10) NOT NULL
+  `club_id` varchar(10) NOT NULL,
+  `joined_date` date NOT NULL,
+  `active_status` boolean NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
