@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kenton Campus Hub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<section id="home-view" class="view active">
+    <header>
+        <div class="logo">Kenton Campus</div>
+        <div>
+            <button class="btn btn-outline" onclick="showView('login-view')" style="margin-right:10px">Log In</button>
+            <button class="btn btn-primary" onclick="showView('login-view')">Sign Up</button>
+        </div>
+    </header>
+
+    <div class="hero">
+        <h1>Welcome to Kenton Hub</h1>
+        <p>Your all-in-one companion for campus life.</p>
+    </div>
+
+    <div class="container">
+        <div class="grid">
+            <div class="card">
+                <h3>📢 Announcements</h3>
+                <p style="color:var(--text-muted); margin-top:10px">The Main Hall cafeteria will be closed for maintenance this weekend. Use the West Gate outlet.</p>
+            </div>
+            <div class="card">
+                <h3>📅 Upcoming Events</h3>
+                <p><strong>Spring Career Fair</strong><br><small>Oct 20 • Grand Ballroom</small></p>
+                <hr style="margin:10px 0; opacity:0.1">
+                <p><strong>Open Mic Night</strong><br><small>Tonight • Student Lounge</small></p>
+            </div>
+            <div class="card">
+                <h3>🏆 Club Spotlight</h3>
+                <p><strong>Kenton Debate Society</strong><br>Now accepting new members for the Winter Nationals.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="login-view" class="view">
+    <div class="auth-card">
+        <h2 style="margin-bottom:10px">Sign In</h2>
+        <p style="color:var(--text-muted); margin-bottom:30px">Enter your student credentials to continue.</p>
+        <div class="form-group">
+            <label>Student ID</label>
+            <input type="text" id="student-name" placeholder="KENTON-2024-XXXX">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="loginProcess()">Continue to Hub</button>
+        <p style="text-align:center; margin-top:20px; font-size:0.9rem">Back to <a href="#" onclick="showView('home-view')">Homepage</a></p>
+    </div>
+</section>
+
+<section id="dashboard-view" class="view">
+    <div class="hero" style="padding-bottom:120px">
+        <h1 style="font-size:1.8rem">Hello, <span id="user-display">Student</span>!</h1>
+        <div style="display:inline-block; background:rgba(255,255,255,0.1); padding:8px 20px; border-radius:30px">
+            🌟 <span id="user-points">1,450</span> Points Earned
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div id="tab-dashboard" class="tab-content">
+            <div class="section-header"><h2>Live Status</h2></div>
+            <div class="grid">
+                <div class="card">
+                    <h3>Kenton Library</h3>
+                    <div class="capacity-bar"><div class="capacity-fill" style="width: 75%; background:var(--danger)"></div></div>
+                    <small>Currently Busy (75%)</small>
+                </div>
+                <div class="card">
+                    <h3>Kenton Gym</h3>
+                    <div class="capacity-bar"><div class="capacity-fill" style="width: 20%"></div></div>
+                    <small>Very Quiet (20%)</small>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-transit" class="tab-content" style="display:none">
+            <div class="section-header"><h2>Transit & Navigation</h2></div>
+            <div class="card" style="margin-bottom:20px">
+                <div class="transit-item">
+                    <div><strong>Main Shuttle (Route A)</strong><br><small>North Campus Gate</small></div>
+                    <span style="color:var(--success); font-weight:bold">2 Mins</span>
+                </div>
+                <div class="transit-item">
+                    <div><strong>Station Connector</strong><br><small>Library Stop</small></div>
+                    <span style="font-weight:bold">14 Mins</span>
+                </div>
+            </div>
+            <div class="card" style="height:250px; background:#e2e8f0; display:flex; align-items:center; justify-content:center">
+                <p>Interactive Campus Map View</p>
+            </div>
+        </div>
+
+        <div id="tab-events" class="tab-content" style="display:none">
+            <div class="section-header"><h2>My Events</h2></div>
+            <div class="grid">
+                <div class="card">
+                    <span class="tag">Workshop</span>
+                    <h3 style="margin-top:10px">Intro to AI Design</h3>
+                    <p style="font-size:0.9rem; margin:10px 0">Room 402 • 2:00 PM</p>
+                    <button class="btn btn-primary" style="padding:6px 15px; font-size:0.8rem">Going</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-clubs" class="tab-content" style="display:none">
+            <div class="section-header"><h2>Clubs</h2></div>
+            <div class="grid">
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between">
+                        <h3>Robotics Club</h3>
+                        <span class="tag" style="background:#dcfce7; color:#166534">Open</span>
+                    </div>
+                    <p style="font-size:0.9rem; margin-top:10px">Join the team building the Kenton Mars Rover.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('tab-dashboard', this)">Home</button>
+        <button class="nav-item" onclick="switchTab('tab-transit', this)">Transit</button>
+        <button class="nav-item" onclick="switchTab('tab-events', this)">Events</button>
+        <button class="nav-item" onclick="switchTab('tab-clubs', this)">Clubs</button>
+        <button class="nav-item" onclick="showView('home-view')">Logout</button>
+    </nav>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
