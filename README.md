@@ -18,7 +18,7 @@ Frontend: React.js / HTML & CSS
 
 Backend: Java / Node.js
 
-Database: PostgreSQL / Firebase
+Database: SQL / Firebase
 
 Cloud & Infrastructure:  AWS (S3, EC2)
 
