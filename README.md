@@ -2,21 +2,6 @@ Live Campus Hub is a centralized platform designed to streamline university life
 
 Developed by Team Vertex as a assessment project, this system aims to bridge communication gaps and digitize essential campus operations.
 
-📑 Table of Contents
-
-Features
-
-Tech Stack
-
-Project Management & Documentation
-
-System Architecture
-
-Getting Started
-
-Team Vertex
-
-Contributing & PR Guidelines
 
 ✨ Features
 
