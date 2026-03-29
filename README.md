@@ -3,7 +3,7 @@ Live Campus Hub is a centralized platform designed to streamline university life
 Developed by Team Vertex as a assessment project, this system aims to bridge communication gaps and digitize essential campus operations.
 
 
-✨ Features
+ Features
 
 Feature 1:  Real-time campus announcements and event tracking
 
@@ -12,17 +12,17 @@ Feature 2:  Centralized resource library for academic materials
 Feature 3:  Interactive campus map and facility booking
 
 
-💻 Tech Stack
+ Tech Stack
 
 Frontend: React.js / HTML & CSS
 
 Backend: Java / Node.js
 
-Database: SQL / Firebase
+Database:  MySql / PhpMyAdmin
 
-Cloud & Infrastructure:  AWS (S3, EC2)
+Cloud & Infrastructure:  AWS (RDS)
 
-📊 Project Management & Documentation
+ Project Management & Documentation
 
 To maintain project velocity and alignment, all tasks, sprints, and business requirements are strictly tracked.
 
