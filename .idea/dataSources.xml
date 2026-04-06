@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="live-campus-hub@localhost" uuid="d906f719-a23f-4b68-ba09-9b870acf7609">
+    <data-source source="LOCAL" name="myprojectdb@vertex-db.c4zw66ww64i2.us-east-1.rds.amazonaws.com" uuid="d906f719-a23f-4b68-ba09-9b870acf7609">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/live-campus-hub</jdbc-url>
+      <jdbc-url>jdbc:mysql://vertex-db.c4zw66ww64i2.us-east-1.rds.amazonaws.com:3306/myprojectdb</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />

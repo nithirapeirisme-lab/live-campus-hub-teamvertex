@@ -1,6 +1,7 @@
 package com.campushub.campus_hub.Service.Impl;
 
 import com.campushub.campus_hub.DTO.LocationDTO;
+import com.campushub.campus_hub.Dao.CheckInDao;
 import com.campushub.campus_hub.Dao.LocationDao;
 import com.campushub.campus_hub.Entity.LocationEntity;
 import com.campushub.campus_hub.Exceptions.LocationNotFoundException;
@@ -11,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +22,7 @@ import java.util.Optional;
 public class LocationServiceImpl implements LocationService {
     private final LocationDao locationDao;
     private final EntityDTOConversion entityDTOConversion;
+    private final CheckInDao checkInDao;
     @Override
     public void registerLocation(LocationDTO location) {
         location.setLocation_id(UtilityData.generateLocation_id());
@@ -56,5 +59,22 @@ public class LocationServiceImpl implements LocationService {
     @Override
     public List<LocationDTO> getAllLocations() {
         return entityDTOConversion.toLocationDTOList(locationDao.findAll());
+    }
+
+    @Override
+    public String calculateCrowdStatus(String locationId) {
+        LocalDateTime hourAgo = LocalDateTime.now().minusHours(1);
+        long activeCount = checkInDao.countRecentCheckIns(locationId, hourAgo);
+
+        LocationEntity location = locationDao.findById(locationId).orElseThrow(() -> new LocationNotFoundException("Location Not found."));
+
+        int capacity = location.getCapacity();
+
+        double occupancyRate = (double) activeCount / capacity;
+
+        if(occupancyRate > 0.9) return "Fully occupied";
+        if(occupancyRate > 0.7) return "Bit Crowded";
+        if(occupancyRate > 0.4) return "Moderate occupied";
+        return "Quiet";
     }
 }

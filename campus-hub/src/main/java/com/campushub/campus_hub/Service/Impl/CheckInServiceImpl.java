@@ -4,12 +4,14 @@ import com.campushub.campus_hub.DTO.CheckInDTO;
 import com.campushub.campus_hub.Dao.CheckInDao;
 import com.campushub.campus_hub.Dao.LocationDao;
 import com.campushub.campus_hub.Dao.StudentDao;
+import com.campushub.campus_hub.Service.RewardService;
 import com.campushub.campus_hub.util.UtilityData;
 import com.campushub.campus_hub.Entity.CheckInEntity;
 import com.campushub.campus_hub.Service.CheckInService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -18,6 +20,7 @@ public class CheckInServiceImpl implements CheckInService {
     private final CheckInDao checkInDao;
     private final StudentDao studentDao;
     private final LocationDao locationDao;
+    private final RewardService rewardService;
 
     @Override
     public void saveCheckIn(String studentId, String locationId) {
@@ -25,12 +28,14 @@ public class CheckInServiceImpl implements CheckInService {
         validateLocation(locationId);
 
         CheckInEntity checkIn = new CheckInEntity();
+        checkIn.setCheckin_id(UtilityData.generateCheckIn_id());
         checkIn.setStudent_id(studentId);
         checkIn.setLocation_id(locationId);
         checkIn.setCheckIn_time(UtilityData.generateTodayDateTime());
 
         checkInDao.save(checkIn);
 
+        rewardService.addPoints(studentId, BigDecimal.valueOf(5.0));
 
     }
 

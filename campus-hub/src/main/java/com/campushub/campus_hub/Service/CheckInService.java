@@ -10,4 +10,5 @@ public interface CheckInService {
     void validateLocation(String locationId);
     List<String> getStudentAtLocation(String locationId);
     List<CheckInDTO> getAllCheckIns(String studentId);
+
 }

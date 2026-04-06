@@ -10,4 +10,5 @@ public interface LocationService {
     void deleteLocation(String location_id);
     LocationDTO getLocationDetails(String location_id);
     List<LocationDTO> getAllLocations();
+    String calculateCrowdStatus(String locationId);
 }

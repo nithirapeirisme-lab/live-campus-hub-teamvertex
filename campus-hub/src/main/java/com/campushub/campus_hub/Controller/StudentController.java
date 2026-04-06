@@ -1,6 +1,7 @@
 package com.campushub.campus_hub.Controller;
 
 import com.campushub.campus_hub.DTO.StudentDTO;
+import com.campushub.campus_hub.Service.StudentRewardService;
 import com.campushub.campus_hub.Service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class StudentController {
     private final StudentService studentService;
+    private final StudentRewardService studentRewardService;
 
     @PostMapping
     public ResponseEntity<Void> saveStudent(@RequestBody StudentDTO studentDTO) {
@@ -55,5 +57,11 @@ public class StudentController {
         String image = studentService.updateProfileImage(studentId, file);
 
         return ResponseEntity.ok(image);
+    }
+
+    @PostMapping("/apply-discount")
+    public ResponseEntity<String> applyDiscount(@RequestParam String studentId, @RequestParam String discountTier) {
+        studentRewardService.redeemDiscount(studentId, discountTier);
+        return ResponseEntity.ok("Discount " + discountTier + " applied and marked as used.");
     }
 }

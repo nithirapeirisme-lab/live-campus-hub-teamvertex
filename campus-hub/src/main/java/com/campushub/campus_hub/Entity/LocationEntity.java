@@ -17,4 +17,5 @@ public class LocationEntity {
     @Id
     private String location_id;
     private String location_name;
+    private int capacity;
 }

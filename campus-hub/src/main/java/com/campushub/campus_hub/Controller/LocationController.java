@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/locations")
@@ -43,5 +44,21 @@ public class LocationController {
     public ResponseEntity<LocationDTO> deleteLocation(@RequestBody LocationDTO locationDTO){
         locationService.deleteLocation(locationDTO.getLocation_id());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/{locationId}/status")
+    public ResponseEntity<Map<String, String>> getLocationStatus(@PathVariable String locationId){
+        String status = locationService.calculateCrowdStatus(locationId);
+
+        return ResponseEntity.ok(Map.of("locationId", locationId, "status", status));
+    }
+
+    @GetMapping("/all-status")
+    public ResponseEntity<Map<String, String>> getAllFacilityStatuses(){
+
+        return ResponseEntity.ok(Map.of(
+                "GYM_01", locationService.calculateCrowdStatus("GYM_01"),
+                "LIB_MAIN", locationService.calculateCrowdStatus("LIB_MAIN"),
+                "MAIN_CANTEEN", locationService.calculateCrowdStatus("MAIN_CANTEEN")));
     }
 }

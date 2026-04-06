@@ -31,5 +31,8 @@ public class StudentRewardEntity  {
     private RewardEntity reward;
 
     private LocalDate earned_date;
-    private BigDecimal points;
+
+    private boolean is_redeemed = false;
+    private LocalDate redeemed_date;
+
 }

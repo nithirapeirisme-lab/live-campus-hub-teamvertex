@@ -5,8 +5,10 @@ import com.campushub.campus_hub.Service.RewardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -30,6 +32,13 @@ public class RewardController {
     @GetMapping("/{reward_id}")
     public ResponseEntity<RewardDTO> getRewardById(@PathVariable("reward_id") String reward_id){
         return ResponseEntity.ok(rewardService.getRewardDetails(reward_id));
+    }
+
+    @PostMapping("/add-points/{points}")
+    public ResponseEntity<String> addPoints(@PathVariable("points") BigDecimal points, Authentication auth){
+        String studentId = auth.getName();
+        rewardService.addPoints(studentId, points);
+        return ResponseEntity.ok(points + "points were added successfully!");
     }
 
 }
