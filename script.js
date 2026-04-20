@@ -1,5 +1,6 @@
 const BASE_URL = "http://localhost:8081/live-campus-hub";
-let userToken = ""; 
+let userToken = localStorage.getItem('jwt') || ""; 
+let currentUserId = ""; 
 
 
 
@@ -27,31 +28,80 @@ function showToast(message) {
 
 
 async function loginProcess() {
-    const id = document.getElementById('login-id').value;
-    const pass = document.getElementById('login-pass').value;
+    const idField = document.getElementById('login-id');
+    const passField = document.getElementById('login-pass');
 
-    
-    if (id.trim() !== "" && pass.trim() !== "") {
-        userToken = "MOCK_JWT_TOKEN";
-        
-        showToast("Login Successful!"); 
-        showView('dashboard-view');
-        refreshFacilityStatus(); 
-    } else {
+    if (!idField || !passField) return; // Safety check
+
+    const id = idField.value;
+    const pass = passField.value;
+
+    if (id.trim() === "" || pass.trim() === "") {
         alert("Please enter both your Student ID and Password.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${BASE_URL}/api/v1/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: id, password: pass })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            userToken = data.jwt; 
+            currentUserId = id; 
+            localStorage.setItem('jwt', userToken); 
+            
+            document.getElementById('user-display').innerText = data.username || id;
+            showToast("Login Successful!"); 
+            showView('dashboard-view');
+            refreshFacilityStatus(); 
+        } else {
+            alert("Login failed! Please check your Student ID and Password.");
+        }
+    } catch (err) {
+        console.error("Backend Connection Error:", err); 
+        alert("Cannot connect to the server. Make sure your Spring Boot app is running on port 8081.");
     }
 }
 
-function signupProcess() {
+async function signupProcess() {
     const name = document.getElementById('signup-name').value;
+    const id = document.getElementById('signup-id').value;
     const email = document.getElementById('signup-email').value;
-    
-    if (name.trim() !== "" && email.includes("@")) {
-        document.getElementById('user-display').innerText = name;
-        showToast(`Welcome to CINEC Hub, ${name}!`);
-        showView('dashboard-view');
-    } else {
-        alert("Please enter a valid name and email.");
+    const pass = document.getElementById('signup-pass').value;
+
+    if (!name || !id || !email || !pass) {
+        alert("Please fill in all fields.");
+        return;
+    }
+
+    try {
+        const signupData = {
+            userId: id,
+            password: pass,
+            firstName: name,
+            email: email,
+            role: "STUDENT"
+        };
+
+        const response = await fetch(`${BASE_URL}/api/v1/auth/signup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(signupData)
+        });
+
+        if (response.ok) {
+            showToast("Registration successful! You can now log in.");
+            showView('login-view');
+        } else {
+            alert("Registration failed. Student ID might already be taken.");
+        }
+    } catch (err) {
+        console.error("Signup Error:", err);
+        alert("Connection lost. Check your backend server.");
     }
 }
 
@@ -132,13 +182,23 @@ function saveProfile() {
 
 
 
-document.getElementById('img-input')?.addEventListener('change', function(e) {
+document.getElementById('img-input')?.addEventListener('change', async function(e) {
     const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            document.getElementById('profile-img-display').src = event.target.result;
-        };
-        reader.readAsDataURL(file);
-    }
+    if (!file || !userToken) return;
+
+    // 1. Keep the preview functionality
+    const reader = new FileReader();
+    reader.onload = (f) => document.getElementById('profile-img-display').src = f.target.result;
+    reader.readAsDataURL(file);
+
+    // 2. Add the backend upload
+    const formData = new FormData();
+    formData.append('file', file); 
+
+    await fetch(`${BASE_URL}/api/v1/students/profile-image/${currentUserId}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${userToken}` },
+        body: formData
+    });
+    showToast("Cloud Profile Updated!");
 });
