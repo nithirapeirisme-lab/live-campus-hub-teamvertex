@@ -1,8 +1,8 @@
 package com.campushub.campus_hub.util;
 
 
-import com.campushub.campus_hub.DTO.*;
-import com.campushub.campus_hub.Entity.*;
+import com.campushub.campus_hub.dto.*;
+import com.campushub.campus_hub.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
