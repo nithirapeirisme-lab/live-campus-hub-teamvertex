@@ -64,6 +64,9 @@ public class AuthController {
             student.setFirst_name(signupDTO.getFirstName());
             student.setLast_name(signupDTO.getLastName());
             student.setEmail(signupDTO.getEmail());
+            student.setPhone(signupDTO.getPhone());
+            student.setEnrolled_Year(signupDTO.getEnrolled_Year());
+            student.setDepartment_id(signupDTO.getDepartment_id());
 
             studentDao.save(student);
             return ResponseEntity.ok("Registration Successful!");

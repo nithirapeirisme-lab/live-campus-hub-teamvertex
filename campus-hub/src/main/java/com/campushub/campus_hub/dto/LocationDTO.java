@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class LocationDTO {
     private String location_id;
-    private String location_name;
-    private String capacity;
+    private String locationName;
+    private int capacity;
 }

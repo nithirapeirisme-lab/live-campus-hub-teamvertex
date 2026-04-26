@@ -25,8 +25,8 @@ public class LocationServiceImpl implements LocationService {
     private final CheckInDao checkInDao;
     @Override
     public void registerLocation(LocationDTO location) {
-        if(locationDao.existsByLocationName(location.getLocation_name())){
-            throw new RuntimeException("The Location with the name " + location.getLocation_name() + "already exists!");
+        if(locationDao.existsByLocationName(location.getLocationName())){
+            throw new RuntimeException("The Location with the name " + location.getLocationName() + "already exists!");
         }
         //location.setLocation_id(UtilityData.generateLocation_id());
         locationDao.save(entityDTOConversion.toLocationEntity(location));
@@ -39,7 +39,11 @@ public class LocationServiceImpl implements LocationService {
         if(!foundLocation.isPresent()) {
             throw new LocationNotFoundException("Location Not found.");
         }
-        foundLocation.get().setLocationName(location.getLocation_name());
+
+        foundLocation.get().setLocation_id(location.getLocation_id());
+        foundLocation.get().setLocationName(location.getLocationName());
+        foundLocation.get().setCapacity(location.getCapacity());
+
 
     }
 

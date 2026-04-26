@@ -26,24 +26,21 @@ public class EventServiceImpl implements EventService {
     @Override
     public void saveEvent(EventDTO event) {
         event.setEvent_id(UtilityData.generateEvent_id());
-        event.setEvent_date(UtilityData.generateTodayDate());
-        event.setEvent_time(LocalTime.now(ZoneOffset.UTC));
-
         eventDao.save(entityDTOConversion.toEventEntity(event));
 
     }
 
     @Override
-    public void updateEvent(String event_Id, EventDTO event) {
-        Optional<EventEntity> existingEvent = eventDao.findById(event_Id);
+    public void updateEvent(String event_Title, EventDTO event) {
+        Optional<EventEntity> existingEvent = eventDao.findByEventTitle(event_Title);
         if(!existingEvent.isPresent()) {
             throw new EventNotFoundException("The event not found");
         }
         existingEvent.get().setEventTitle(event.getEventTitle());
-        existingEvent.get().setEvent_date(UtilityData.generateTodayDate());
-        existingEvent.get().setEvent_time(LocalTime.now(ZoneOffset.UTC));
-        existingEvent.get().setLocation_id(event.getLocation_id());
-        existingEvent.get().setClub_id(event.getClub_id());
+        existingEvent.get().setEvent_date(event.getEvent_date());
+        existingEvent.get().setEvent_time(event.getEvent_time());
+        existingEvent.get().setLocation_name(event.getLocation_name());
+        existingEvent.get().setClub_name(event.getClub_name());
 
     }
 
@@ -54,6 +51,14 @@ public class EventServiceImpl implements EventService {
         }
         eventDao.deleteById(event_Id);
 
+    }
+
+    @Override
+    public EventDTO searchEvent(String event_Title) {
+        if(!eventDao.findByEventTitle(event_Title).isPresent()) {
+            throw new EventNotFoundException("The event not found");
+        }
+        return entityDTOConversion.toEventDTO(eventDao.findByEventTitle(event_Title).get());
     }
 
     @Override

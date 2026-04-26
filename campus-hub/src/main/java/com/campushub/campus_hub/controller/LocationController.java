@@ -33,7 +33,8 @@ public class LocationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LocationDTO> getLocationById(@RequestParam("location_id") String location_id){
+    public ResponseEntity<LocationDTO> getLocationById(@PathVariable("id") String location_id){
+        locationService.getLocationDetails(location_id);
         return ResponseEntity.ok(locationService.getLocationDetails(location_id));
     }
 

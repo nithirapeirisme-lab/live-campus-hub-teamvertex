@@ -8,5 +8,6 @@ public interface EventService {
     void saveEvent(EventDTO event);
     void updateEvent(String event_Id, EventDTO event);
     void deleteEvent(String event_Id);
+    EventDTO searchEvent(String event_Title);
     List<EventDTO> getAllEvents();
 }

@@ -29,15 +29,20 @@ public class EventController {
         return ResponseEntity.ok(eventService.getAllEvents());
     }
 
-    @PutMapping
-    public ResponseEntity<Void> updateEvent(@RequestBody EventDTO eventDTO){
-        eventService.updateEvent(eventDTO.getEvent_id(), eventDTO);
+    @PutMapping("/name/{eventName}")
+    public ResponseEntity<Void> updateEvent(@PathVariable String eventName, @RequestBody EventDTO eventDTO){
+        eventService.updateEvent(eventName, eventDTO);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteEvent(@RequestBody EventDTO eventDTO){
-        eventService.deleteEvent(eventDTO.getEvent_id());
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable String id){
+        eventService.deleteEvent(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<EventDTO> getEventByTitle(@RequestParam String title) {
+        return ResponseEntity.ok(eventService.searchEvent(title));
     }
 }
