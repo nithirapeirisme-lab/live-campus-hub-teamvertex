@@ -11,4 +11,6 @@ import lombok.NoArgsConstructor;
 public class RewardDTO {
     private String reward_id;
     private String reward_name;
+    private int reward_points;
+    private int discount_percentage;
 }

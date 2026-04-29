@@ -17,4 +17,6 @@ public class RewardEntity {
     @Id
     private String reward_id;
     private String reward_name;
+    private int reward_points;
+    private int discount_percentage;
 }

@@ -32,9 +32,17 @@ public class RewardServiceImpl implements RewardService {
 
     @Override
     public void createReward(RewardDTO reward) {
-        reward.setReward_id((UtilityData.generateReward_id()));
+        //reward.setReward_id((UtilityData.generateReward_id()));
         rewardDao.save(entityDTOConversion.toRewardEntity(reward));
 
+    }
+
+    @Override
+    public void deleteReward(String rewardId) {
+        if(!rewardDao.findById(rewardId).isPresent()) {
+            throw new RewardNotFoundException("Reward not found");
+        }
+        rewardDao.deleteById(rewardId);
     }
 
     @Override

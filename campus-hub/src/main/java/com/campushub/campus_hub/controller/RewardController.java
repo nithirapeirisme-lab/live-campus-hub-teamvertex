@@ -1,6 +1,7 @@
 package com.campushub.campus_hub.controller;
 
 import com.campushub.campus_hub.dto.RewardDTO;
+import com.campushub.campus_hub.exceptions.RewardNotFoundException;
 import com.campushub.campus_hub.service.RewardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,18 @@ public class RewardController {
     public ResponseEntity<Void> saveReward(@RequestBody RewardDTO rewardDTO){
         rewardService.createReward(rewardDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @DeleteMapping("/{rewardId}")
+    public ResponseEntity<Void> deleteReward(@PathVariable String rewardId){
+        try{
+            rewardService.deleteReward(rewardId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        }catch(RewardNotFoundException e){
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
     }
 
     @GetMapping

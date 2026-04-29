@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface RewardService {
     void createReward(RewardDTO reward);
+    void deleteReward(String rewardId);
     RewardDTO getRewardDetails(String reward_id);
     List<RewardDTO> getAllRewards();
     void addPoints(String studentId, BigDecimal points);
