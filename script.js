@@ -51,15 +51,19 @@ async function loginProcess() {
         if (response.ok) {
             const data = await response.json();
             userToken = data.jwt; 
-            currentUserId = id; 
+            currentUserId = data.userId; 
             localStorage.setItem('jwt', userToken); 
             
-            document.getElementById('user-display').innerText = data.username || id;
-            showToast("Login Successful!"); 
-            showView('dashboard-view');
-            refreshFacilityStatus(); 
-        } else {
-            alert("Login failed! Please check your Student ID and Password.");
+            document.getElementById('user-display').innerText = data.firstName || "Student";
+            showToast(`Welcome back, ${data.firstName || data.userId}!`); 
+            
+
+            if (data.role === 'ADMIN' || data.role === 'STAFF') {
+                showView('admin-view');
+            } else {
+                showView('dashboard-view');
+                refreshFacilityStatus(); 
+            }
         }
     } catch (err) {
         console.error("Backend Connection Error:", err); 
@@ -68,41 +72,29 @@ async function loginProcess() {
 }
 
 async function signupProcess() {
-    const name = document.getElementById('signup-name').value;
-    const id = document.getElementById('signup-id').value;
-    const email = document.getElementById('signup-email').value;
-    const pass = document.getElementById('signup-pass').value;
-
-    if (!name || !id || !email || !pass) {
-        alert("Please fill in all fields.");
-        return;
-    }
+    const signupData = {
+        userId: document.getElementById('signup-id').value,
+        password: document.getElementById('signup-pass').value,
+        firstName: document.getElementById('signup-fname').value,
+        lastName: document.getElementById('signup-lname').value,
+        email: document.getElementById('signup-email').value,
+        phone: document.getElementById('signup-phone').value,
+        enrolled_Year: document.getElementById('signup-year').value,
+        department_id: document.getElementById('signup-dept').value,
+        role: "STUDENT"
+    };
 
     try {
-        const signupData = {
-            userId: id,
-            password: pass,
-            firstName: name,
-            email: email,
-            role: "STUDENT"
-        };
-
         const response = await fetch(`${BASE_URL}/api/v1/auth/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(signupData)
         });
-
         if (response.ok) {
-            showToast("Registration successful! You can now log in.");
+            showToast("Registration successful!");
             showView('login-view');
-        } else {
-            alert("Registration failed. Student ID might already be taken.");
         }
-    } catch (err) {
-        console.error("Signup Error:", err);
-        alert("Connection lost. Check your backend server.");
-    }
+    } catch (err) { console.error("Signup failed", err); }
 }
 
 
@@ -180,18 +172,32 @@ function saveProfile() {
     }
 }
 
+async function loadStudentProfile() {
+    const response = await fetch(`${BASE_URL}/api/v1/students/me`, {
+        headers: { 'Authorization': `Bearer ${userToken}` }
+    });
+    const data = await response.json();
+    document.getElementById('edit-name').value = `${data.firstName} ${data.lastName}`;
+}
+
+async function getRewards() {
+    const response = await fetch(`${BASE_URL}/api/v1/student_rewards/my-rewards`, {
+        headers: { 'Authorization': `Bearer ${userToken}` }
+    });
+    const rewards = await response.json();
+}
+
 
 
 document.getElementById('img-input')?.addEventListener('change', async function(e) {
     const file = e.target.files[0];
     if (!file || !userToken) return;
 
-    // 1. Keep the preview functionality
     const reader = new FileReader();
     reader.onload = (f) => document.getElementById('profile-img-display').src = f.target.result;
     reader.readAsDataURL(file);
 
-    // 2. Add the backend upload
+
     const formData = new FormData();
     formData.append('file', file); 
 
