@@ -1,7 +1,11 @@
 package com.campushub.campus_hub.service.impl;
 
+import com.campushub.campus_hub.dao.ClubDao;
+import com.campushub.campus_hub.dao.StudentDao;
 import com.campushub.campus_hub.dto.StudentsClubDTO;
 import com.campushub.campus_hub.dao.StudentsClubDao;
+import com.campushub.campus_hub.entity.ClubEntity;
+import com.campushub.campus_hub.entity.StudentEntity;
 import com.campushub.campus_hub.entity.StudentsClubEntity;
 import com.campushub.campus_hub.entity.StudentsClubId;
 import com.campushub.campus_hub.exceptions.ResourceNotFoundException;
@@ -22,11 +26,24 @@ import java.util.Optional;
 public class StudentsClubServiceImpl implements StudentsClubService {
     private final StudentsClubDao studentsClubDao;
     private final EntityDTOConversion entityDTOConversion;
+    private final ClubDao clubDao;
+    private final StudentDao studentDao;
 
     @Override
-    public void saveStudentsClub(StudentsClubDTO studentsClub) {
-        studentsClubDao.save(entityDTOConversion.toStudentsClubEntity(studentsClub));
+    public StudentsClubDTO saveStudentsClub(StudentsClubDTO dto) {
+        StudentsClubEntity entity = new StudentsClubEntity();
+        ClubEntity club = clubDao.findById(dto.getClub_id())
+                .orElseThrow(() -> new RuntimeException("Club not found"));
 
+        StudentEntity student = studentDao.findById(dto.getStudent_id())
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+        entity.setClub(club);
+        entity.setStudent(student);
+        StudentsClubId id = new StudentsClubId(dto.getStudent_id(), dto.getClub_id());
+        entity.setId(id);
+
+        StudentsClubEntity saved = studentsClubDao.save(entity);
+        return entityDTOConversion.toStudentsClubDTO(saved);
     }
 
     @Override
@@ -50,19 +67,26 @@ public class StudentsClubServiceImpl implements StudentsClubService {
     }
 
     @Override
-    public StudentsClubDTO joinClub(StudentsClubDTO studentsClub) {
-        StudentsClubId id = new StudentsClubId(studentsClub.getStudent_id(), studentsClub.getClub_id());
-        StudentsClubEntity registration = new StudentsClubEntity();
-        registration.setId(id);
-        registration.setJoined_date(LocalDate.now());
-        registration.setActive_status(true);
-        StudentsClubEntity savedEntry = studentsClubDao.save(registration);
-        return mapToResponse(savedEntry);
+    public StudentsClubDTO joinClub(StudentsClubDTO dto) {
+        ClubEntity club = clubDao.findById(dto.getClub_id())
+                .orElseThrow(() -> new RuntimeException("Club not found with ID: " + dto.getClub_id()));
+
+        StudentEntity student = studentDao.findById(dto.getStudent_id())
+                .orElseThrow(() -> new RuntimeException("Student not found with ID: " + dto.getStudent_id()));
+
+        StudentsClubEntity entity = new StudentsClubEntity();
+        entity.setClub(club);
+        entity.setStudent(student);
+        StudentsClubId id = new StudentsClubId(dto.getStudent_id(), dto.getClub_id());
+        entity.setId(id);
+        entity.setActive_status(true);
+        StudentsClubEntity saved = studentsClubDao.save(entity);
+        return entityDTOConversion.toStudentsClubDTO(saved);
     }
 
     @Override
     public void deactivateMembership(String student_id, String club_id) {
-        StudentsClubId id = new StudentsClubId(student_id, club_id);
+        //StudentsClubId id = new StudentsClubId(student_id, club_id);
 
         StudentsClubEntity membership = studentsClubDao.findByIdStudentIdAndIdClubId(student_id, club_id)
                 .orElseThrow(() -> new ResourceNotFoundException("Membership not found for this Student and Club"));

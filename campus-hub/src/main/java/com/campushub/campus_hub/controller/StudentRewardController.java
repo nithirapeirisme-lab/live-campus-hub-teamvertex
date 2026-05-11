@@ -18,15 +18,14 @@ public class StudentRewardController {
     private final StudentRewardService studentRewardService;
 
     @PostMapping("/assign")
-    public ResponseEntity<StudentRewardDTO> assignReward(@RequestBody StudentRewardDTO rewardDTO, Authentication authentication) {
-        studentRewardService.checkDuplicateReward(rewardDTO.getStudent_id(), rewardDTO.getReward_id());
-        studentRewardService.assignRewardsToStudent(rewardDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<StudentRewardDTO> assignReward(@RequestBody StudentRewardDTO rewardDTO) {
+        StudentRewardDTO savedReward = studentRewardService.assignRewardsToStudent(rewardDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedReward);
     }
 
     @GetMapping("/admin/all")
     public ResponseEntity<List<StudentRewardDTO>> getAllRewards(Authentication authentication) {
-        if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+        if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_STAFF"))) {
             return ResponseEntity.ok(studentRewardService.getAllStudentRewards());
         }
 

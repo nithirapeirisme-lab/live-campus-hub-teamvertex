@@ -22,17 +22,14 @@ public class StudentRewardServiceImpl implements StudentRewardService {
     private final StudentRewardDao studentRewardDao;
     private final EntityDTOConversion entityDTOConversion;
     @Override
-    public void assignRewardsToStudent(StudentRewardDTO dto) {
+    public StudentRewardDTO assignRewardsToStudent(StudentRewardDTO dto) {
         checkDuplicateReward(dto.getStudent_id(), dto.getReward_id());
-
-        if(dto.getEarned_date() == null){
+        if (dto.getEarned_date() == null) {
             dto.setEarned_date(LocalDate.now());
         }
-
-        studentRewardDao.save(entityDTOConversion.toStudentRewardEntity(dto));
-
+        var savedEntity = studentRewardDao.save(entityDTOConversion.toStudentRewardEntity(dto));
+        return entityDTOConversion.toStudentRewardDTO(savedEntity);
     }
-
     @Override
     public void checkDuplicateReward(String studentId, String reward_Id) {
         boolean exists = studentRewardDao.existsByIdStudentIdAndIdRewardId(studentId, reward_Id);

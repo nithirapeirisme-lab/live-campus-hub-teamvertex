@@ -17,6 +17,7 @@ import java.util.List;
 public class StudentsClubController {
     private final StudentsClubService studentsClubService;
 
+    //admin can join the students to the clubs via this method
     @PostMapping("/join-auth")
     public ResponseEntity<Void> joinClub(@RequestBody StudentsClubDTO studentsClubDTO, Authentication authentication){
         studentsClubDTO.setStudent_id(authentication.getName());
@@ -29,12 +30,12 @@ public class StudentsClubController {
         return ResponseEntity.ok(studentsClubService.getStudentsClubs());
     }
 
-    @PutMapping("/{clubId}")
+    /*@PutMapping("/{clubId}")
         public ResponseEntity<Void> updateMembership(@PathVariable String clubId, Authentication authentication){
         String student_id = authentication.getName();
         studentsClubService.updateStudentsClub(student_id, clubId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }
+    }*/
 
     @DeleteMapping("/leave")
     public ResponseEntity<Void> leaveClub(@RequestBody StudentsClubDTO studentsClubDTO, Authentication authentication){
@@ -43,13 +44,17 @@ public class StudentsClubController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    //this is for students, they can join to the clubs by themselves
     @PostMapping("/join")
     public ResponseEntity<StudentsClubDTO> join(@RequestBody StudentsClubDTO request) {
         return ResponseEntity.ok(studentsClubService.joinClub(request));
     }
 
-    @PatchMapping("/{id}/deactivate")
-    public ResponseEntity<Void> deactivate(@PathVariable String  student_id, String club_id) {
+    @PatchMapping("/{student_id}/{club_id}/deactivate")
+    public ResponseEntity<Void> deactivate(
+            @PathVariable String student_id,
+            @PathVariable String club_id) {
+
         studentsClubService.deactivateMembership(student_id, club_id);
         return ResponseEntity.noContent().build();
     }

@@ -5,7 +5,7 @@ import com.campushub.campus_hub.dto.StudentsClubDTO;
 import java.util.List;
 
 public interface StudentsClubService {
-    void saveStudentsClub(StudentsClubDTO studentsClub);
+    StudentsClubDTO saveStudentsClub(StudentsClubDTO studentsClub);
     void updateStudentsClub(String Student_id, String Club_id);
     void deleteStudentsClub(StudentsClubDTO studentsClub);
     StudentsClubDTO joinClub(StudentsClubDTO studentsClub);

@@ -6,14 +6,24 @@ import com.campushub.campus_hub.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 public class EntityDTOConversion {
     private final ModelMapper modelMapper;
+
+    public EntityDTOConversion(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+        this.modelMapper.getConfiguration()
+                .setMatchingStrategy(MatchingStrategies.STRICT);
+        this.modelMapper.typeMap(StudentsClubEntity.class, StudentsClubDTO.class).addMappings(mapper -> {
+            mapper.map(src -> src.getStudent().getStudent_id(), StudentsClubDTO::setStudent_id);
+            mapper.map(src -> src.getClub().getClubId(), StudentsClubDTO::setClub_id);
+        });
+    }
 
     //Bus
     public BusDTO toBusDTO(BusEntity bus) {
