@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
@@ -28,6 +29,8 @@ public class StudentRewardEntity  {
     @MapsId("rewardId")
     @JoinColumn(name = "reward_id")
     private RewardEntity reward;
+
+    private BigDecimal points;
 
     private LocalDate earned_date;
 

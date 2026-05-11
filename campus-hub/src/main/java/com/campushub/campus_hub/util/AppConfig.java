@@ -9,10 +9,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EnableJpaRepositories
 public class AppConfig {
-    @Bean
-    public ModelMapper modelMapper() {
+    /*@Bean
+    public ModelMapper modelMapper()
+    {
         return new ModelMapper();
-    }
+    }*/
 
     public static void main(String[] args) {
         SpringApplication.run(AppConfig.class, args);
