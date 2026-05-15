@@ -27,17 +27,13 @@ function showToast(message) {
 }
 
 
-async function loginProcess() {
-    const idField = document.getElementById('login-id');
-    const passField = document.getElementById('login-pass');
+async function loginProcess(manualId = null, manualPass = null) {
+    // 1. Get credentials from parameters (signup) or DOM (login page)
+    const id = manualId || document.getElementById('login-id').value;
+    const pass = manualPass || document.getElementById('login-pass').value;
 
-    if (!idField || !passField) return; // Safety check
-
-    const id = idField.value;
-    const pass = passField.value;
-
-    if (id.trim() === "" || pass.trim() === "") {
-        alert("Please enter both your Student ID and Password.");
+    if (!id || !pass) {
+        console.error("Login attempted without credentials");
         return;
     }
 
@@ -50,39 +46,66 @@ async function loginProcess() {
 
         if (response.ok) {
             const data = await response.json();
+            console.log("Full Backend Response:", data); // Check your F12 console!
+            
             userToken = data.jwt; 
-            currentUserId = data.userId; 
             localStorage.setItem('jwt', userToken); 
             
-            document.getElementById('user-display').innerText = data.firstName || "Student";
-            showToast(`Welcome back, ${data.firstName || data.userId}!`); 
-            
+            // Handle name from both StudentEntity (firstName) and StaffEntity (first_name)
+            const displayName = data.first_name || data.firstName || "User";
+            document.getElementById('user-display').innerText = displayName;
 
-            if (data.role === 'ADMIN' || data.role === 'STAFF') {
+            // --- IMPROVED REDIRECT LOGIC ---
+            
+            // Convert role to uppercase if it exists
+            const role = data.role ? data.role.toUpperCase() : '';
+            
+            // Check for any variation of the admin/staff flag
+            // (Java booleans can be serialized as is_admin, isAdmin, or admin)
+            const hasAdminFlag = data.is_admin === true || data.isAdmin === true || data.admin === true;
+            
+            // Fallback: Check if the User ID starts with STF (Staff)
+            const isStaffId = id.toUpperCase().startsWith('STF');
+
+            if (role === 'ADMIN') {
                 showView('admin-view');
-            } else {
-                showView('dashboard-view');
+            } else if (role === 'STAFF' || hasAdminFlag || isStaffId) {
+                showView('staff-view');
+                showStaffSection('staff-overview'); 
+            } 
+            else {
+                console.log("Authorized as Student");
+                showView('dashboard-view'); 
                 refreshFacilityStatus(); 
             }
+            // --- END REDIRECT LOGIC ---
+
+        } else {
+            alert("Login failed. Check your credentials.");
         }
     } catch (err) {
-        console.error("Backend Connection Error:", err); 
-        alert("Cannot connect to the server. Make sure your Spring Boot app is running on port 8081.");
+        console.error("Login Error:", err);
     }
 }
 
 async function signupProcess() {
-    const signupData = {
+    // 1. Capture the role selection right at the start
+    const selectedRole = document.getElementById('signup-role').value;
+    
+    let signupData = {
         userId: document.getElementById('signup-id').value,
         password: document.getElementById('signup-pass').value,
         firstName: document.getElementById('signup-fname').value,
         lastName: document.getElementById('signup-lname').value,
         email: document.getElementById('signup-email').value,
         phone: document.getElementById('signup-phone').value,
-        enrolled_Year: document.getElementById('signup-year').value,
-        department_id: document.getElementById('signup-dept').value,
-        role: "STUDENT"
+        role: selectedRole
     };
+
+    if (selectedRole === 'STUDENT') {
+        signupData.enrolledYear = document.getElementById('signup-year').value;
+        signupData.departmentId = document.getElementById('signup-dept').value;
+    }
 
     try {
         const response = await fetch(`${BASE_URL}/api/v1/auth/signup`, {
@@ -90,11 +113,48 @@ async function signupProcess() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(signupData)
         });
+
         if (response.ok) {
-            showToast("Registration successful!");
-            showView('login-view');
+            showToast(`Registered successfully as ${selectedRole}!`);
+            
+            // Get credentials for auto-login
+            const id = signupData.userId;
+            const pass = signupData.password;
+            
+            // Run the login process in the background to get the JWT
+            await loginProcess(id, pass); 
+
+            // 2. OVERRIDE REDIRECT: 
+            // Even if loginProcess defaults to student, we FORCE the view based on what they just picked
+            if (selectedRole === 'STAFF') {
+                showView('staff-view');
+            } else {
+                showView('dashboard-view');
+            }
+            
+            clearSignupForm();
+        } else {
+            const errorText = await response.text();
+            alert("Signup failed: " + errorText);
         }
-    } catch (err) { console.error("Signup failed", err); }
+    } catch (err) {
+        console.error("Signup error:", err);
+    }
+}
+
+
+function clearSignupForm() {
+    const fields = [
+        'signup-id', 'signup-pass', 'signup-fname', 'signup-lname', 
+        'signup-email', 'signup-phone', 'signup-year', 'signup-dept'
+    ];
+    fields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) field.value = "";
+    });
+    
+    document.getElementById('signup-role').value = "STUDENT";
+    toggleSignupFields(); 
 }
 
 
@@ -208,3 +268,176 @@ document.getElementById('img-input')?.addEventListener('change', async function(
     });
     showToast("Cloud Profile Updated!");
 });
+
+
+document.getElementById('signup-role')?.addEventListener('change', function() {
+    const idInput = document.getElementById('signup-id');
+    if (this.value === 'STAFF') {
+        idInput.placeholder = "STF_001";
+    } else {
+        idInput.placeholder = "STU_001";
+    }
+});
+
+function toggleSignupFields() {
+    const role = document.getElementById('signup-role').value;
+    const extraFields = document.getElementById('student-extra-fields');
+    const idInput = document.getElementById('signup-id');
+
+    if (role === 'STAFF') {
+        extraFields.style.display = 'none'; 
+        idInput.placeholder = "STF_001";    
+    } else {
+        extraFields.style.display = 'block'; 
+        idInput.placeholder = "STU_001";
+    }
+}
+
+
+function showStaffSection(sectionId, element) {
+    document.querySelectorAll('.staff-section').forEach(section => {
+        section.style.display = 'none';
+    });
+
+
+    const target = document.getElementById(sectionId);
+    if (target) {
+        target.style.display = 'block';
+    }
+
+    if (element) {
+        document.querySelectorAll('.sidebar .nav-item').forEach(nav => {
+            nav.classList.remove('active');
+        });
+        element.classList.add('active');
+    }
+}
+
+
+async function loadAllBuses() {
+    try {
+        const response = await fetch(`${BASE_URL}/api/v1/bus/get-all`, {
+            headers: { 'Authorization': `Bearer ${userToken}` }
+        });
+        const buses = await response.json();
+        // Here you would write logic to display them in a table
+        console.log("All Buses:", buses);
+    } catch (err) {
+        console.error("Fetch Buses Error:", err);
+    }
+}
+
+async function deleteBus(busId) {
+    if(!confirm("Delete this bus?")) return;
+    try {
+        const response = await fetch(`${BASE_URL}/api/v1/bus/${busId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${userToken}` }
+        });
+        if(response.ok) showToast("Bus deleted");
+    } catch (err) {
+        console.error("Delete Error:", err);
+    }
+}
+
+
+async function saveMultipleStudents(studentsArray) {
+    try {
+        const response = await fetch(`${BASE_URL}/api/v1/students/save-students`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userToken}` 
+            },
+            body: JSON.stringify(studentsArray)
+        });
+        if(response.ok) showToast("All students enrolled!");
+    } catch (err) {
+        console.error("Bulk Save Error:", err);
+    }
+}
+
+async function updateEvent(eventName, eventData) {
+    // Endpoints from doc: /api/v1/events/name/{name}
+    try {
+        const response = await fetch(`${BASE_URL}/api/v1/events/name/${eventName}`, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userToken}` 
+            },
+            body: JSON.stringify(eventData)
+        });
+        if(response.ok) showToast("Event updated!");
+    } catch (err) {
+        console.error("Event Update Error:", err);
+    }
+}
+
+async function createReward(rewardData) {
+    try {
+        const response = await fetch(`${BASE_URL}/api/v1/rewards`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userToken}` 
+            },
+            body: JSON.stringify(rewardData)
+        });
+        if(response.ok) showToast("Reward created!");
+    } catch (err) {
+        console.error("Reward Error:", err);
+    }
+}
+
+
+// 1. DEPARTMENT MANAGEMENT
+async function saveDepartment() {
+    const deptData = {
+        department_id: document.getElementById('dept-id').value,
+        department_name: document.getElementById('dept-name').value
+    };
+    try {
+        const response = await fetch(`${BASE_URL}/api/v1/departments`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${userToken}` },
+            body: JSON.stringify(deptData)
+        });
+        if (response.ok) showToast("Department saved!");
+    } catch (err) { console.error(err); }
+}
+
+// 2. EVENT MANAGEMENT
+async function saveEvent() {
+    const eventData = {
+        name: document.getElementById('event-name').value,
+        date: document.getElementById('event-date').value,
+        location: document.getElementById('event-location').value,
+        club_id: document.getElementById('event-club').value
+    };
+    try {
+        const response = await fetch(`${BASE_URL}/api/v1/events`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${userToken}` },
+            body: JSON.stringify(eventData)
+        });
+        if (response.ok) showToast("Event created successfully!");
+    } catch (err) { console.error(err); }
+}
+
+// 3. REWARD MANAGEMENT
+async function saveReward() {
+    const rewardData = {
+        reward_id: document.getElementById('reward-id').value,
+        reward_points: document.getElementById('reward-points').value,
+        discount_percentage: document.getElementById('reward-discount').value
+    };
+    try {
+        const response = await fetch(`${BASE_URL}/api/v1/rewards`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${userToken}` },
+            body: JSON.stringify(rewardData)
+        });
+        if (response.ok) showToast("Reward published!");
+    } catch (err) { console.error(err); }
+}
