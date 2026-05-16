@@ -1,5 +1,6 @@
 package com.campushub.campus_hub.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -27,5 +28,6 @@ public class StudentEntity {
     private String enrolled_Year;
     private String department_id;
     private String profileImageUrl;
-    private BigDecimal points;
+    @Column(name = "points", nullable = false)
+    public BigDecimal points = BigDecimal.ZERO;
 }
