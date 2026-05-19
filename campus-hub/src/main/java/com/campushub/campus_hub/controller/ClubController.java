@@ -4,6 +4,7 @@ import com.campushub.campus_hub.dto.ClubDTO;
 import com.campushub.campus_hub.dao.ClubDao;
 import com.campushub.campus_hub.exceptions.ClubNotFoundException;
 import com.campushub.campus_hub.service.ClubService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class ClubController {
     }
 
     @PostMapping
-    public ResponseEntity<String> saveClub(@RequestBody ClubDTO clubDTO){
+    public ResponseEntity<String> saveClub(@Valid @RequestBody ClubDTO clubDTO){
         clubService.saveClub(clubDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

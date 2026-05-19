@@ -35,7 +35,8 @@ public class StudentRewardController {
     @GetMapping("/my-rewards")
     public ResponseEntity<List<StudentRewardDTO>> getMyRewards(Authentication authentication) {
         String studentId = authentication.getName();
-        return ResponseEntity.ok(studentRewardService.getAllStudentRewards());
+        List<StudentRewardDTO> myPersonalRewards = studentRewardService.getRewardsByStudentId(studentId);
+        return ResponseEntity.ok(myPersonalRewards);
     }
 
 

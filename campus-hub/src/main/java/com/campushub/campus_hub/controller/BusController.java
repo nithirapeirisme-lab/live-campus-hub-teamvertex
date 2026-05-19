@@ -4,6 +4,7 @@ import com.campushub.campus_hub.dto.BusDTO;
 import com.campushub.campus_hub.dao.BusDao;
 import com.campushub.campus_hub.exceptions.BusNotFoundException;
 import com.campushub.campus_hub.service.BusService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class BusController {
 
 
     @PostMapping("/save" )
-    public ResponseEntity<String> addBus(@RequestBody BusDTO busDTO) {
+    public ResponseEntity<String> addBus(@Valid @RequestBody BusDTO busDTO) {
         busService.saveBus(busDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

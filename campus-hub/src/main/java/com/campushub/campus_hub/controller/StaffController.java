@@ -4,6 +4,7 @@ package com.campushub.campus_hub.controller;
 import com.campushub.campus_hub.dto.StaffDTO;
 import com.campushub.campus_hub.exceptions.BusNotFoundException;
 import com.campushub.campus_hub.service.StaffService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class StaffController {
     private final StaffService staffService;
 
     @PostMapping
-    public ResponseEntity<Void> saveStaffMember(@RequestBody StaffDTO staffMember) {
+    public ResponseEntity<Void> saveStaffMember(@Valid @RequestBody StaffDTO staffMember) {
         staffService.saveStaffMember(staffMember);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

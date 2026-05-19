@@ -5,6 +5,7 @@ import com.campushub.campus_hub.dao.DepartmentDao;
 import com.campushub.campus_hub.exceptions.ClubNotFoundException;
 import com.campushub.campus_hub.service.DepartmentService;
 import com.campushub.campus_hub.service.impl.DepartmentServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class DepartmentController {
     private final DepartmentDao departmentDao;
 
     @PostMapping
-    public ResponseEntity<String> saveDepartment(@RequestBody DepartmentDTO departmentDTO){
+    public ResponseEntity<String> saveDepartment(@Valid @RequestBody DepartmentDTO departmentDTO){
         departmentService.saveDepartment(departmentDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

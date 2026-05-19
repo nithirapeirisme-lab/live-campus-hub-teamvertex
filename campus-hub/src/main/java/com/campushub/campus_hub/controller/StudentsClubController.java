@@ -2,6 +2,7 @@ package com.campushub.campus_hub.controller;
 
 import com.campushub.campus_hub.dto.StudentsClubDTO;
 import com.campushub.campus_hub.service.StudentsClubService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -19,7 +20,7 @@ public class StudentsClubController {
 
     //admin can join the students to the clubs via this method
     @PostMapping("/join-auth")
-    public ResponseEntity<Void> joinClub(@RequestBody StudentsClubDTO studentsClubDTO, Authentication authentication){
+    public ResponseEntity<Void> joinClub(@Valid @RequestBody StudentsClubDTO studentsClubDTO, Authentication authentication){
         studentsClubDTO.setStudent_id(authentication.getName());
         studentsClubService.saveStudentsClub((StudentsClubDTO) studentsClubDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();

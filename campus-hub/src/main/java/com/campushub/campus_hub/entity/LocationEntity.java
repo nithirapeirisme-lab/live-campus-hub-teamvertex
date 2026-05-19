@@ -16,8 +16,12 @@ import lombok.NoArgsConstructor;
 @Table(name = "location")
 public class LocationEntity {
     @Id
+    @Column(name = "location_id", nullable = false)
     private String location_id;
-    @Column(name = "location_name")
+
+    @Column(name = "location_name", nullable = false)
     private String locationName;
+
+    @Column(name = "capacity", nullable = false)
     private int capacity;
 }

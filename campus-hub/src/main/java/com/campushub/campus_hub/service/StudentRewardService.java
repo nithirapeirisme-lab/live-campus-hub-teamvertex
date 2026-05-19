@@ -7,7 +7,9 @@ import java.util.List;
 public interface StudentRewardService {
     StudentRewardDTO assignRewardsToStudent(StudentRewardDTO dto);
     void checkDuplicateReward(String studentId, String reward_Id);
+    List<StudentRewardDTO> getRewardsByStudentId(String studentId);
     List<StudentRewardDTO> getAllStudentRewards();
     void redeemDiscount(String studentId, String rewardId);
+
 
 }

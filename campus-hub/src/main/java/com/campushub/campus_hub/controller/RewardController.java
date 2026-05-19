@@ -3,6 +3,7 @@ package com.campushub.campus_hub.controller;
 import com.campushub.campus_hub.dto.RewardDTO;
 import com.campushub.campus_hub.exceptions.RewardNotFoundException;
 import com.campushub.campus_hub.service.RewardService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class RewardController {
     private final RewardService rewardService;
 
     @PostMapping
-    public ResponseEntity<Void> saveReward(@RequestBody RewardDTO rewardDTO){
+    public ResponseEntity<Void> saveReward(@Valid @RequestBody RewardDTO rewardDTO){
         rewardService.createReward(rewardDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

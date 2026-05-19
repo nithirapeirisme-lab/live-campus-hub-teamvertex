@@ -22,19 +22,21 @@ public class StudentRewardEntity  {
 
     @ManyToOne
     @MapsId("studentId")
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_id", nullable = false)
     private StudentEntity student;
 
     @ManyToOne
     @MapsId("rewardId")
-    @JoinColumn(name = "reward_id")
+    @JoinColumn(name = "reward_id", nullable = false)
     private RewardEntity reward;
 
     private BigDecimal points;
 
+    @Column(name = "earned_date", nullable = false)
     private LocalDate earned_date;
 
     private boolean is_redeemed = false;
+
     private LocalDate redeemed_date;
 
 }

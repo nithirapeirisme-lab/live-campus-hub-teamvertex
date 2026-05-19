@@ -3,6 +3,7 @@ package com.campushub.campus_hub.controller;
 import com.campushub.campus_hub.dto.StudentDTO;
 import com.campushub.campus_hub.service.StudentRewardService;
 import com.campushub.campus_hub.service.StudentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class StudentController {
     private final StudentRewardService studentRewardService;
 
     @PostMapping
-    public ResponseEntity<Void> saveStudent(@RequestBody StudentDTO studentDTO) {
+    public ResponseEntity<Void> saveStudent(@Valid @RequestBody StudentDTO studentDTO) {
         studentService.saveStudent(studentDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

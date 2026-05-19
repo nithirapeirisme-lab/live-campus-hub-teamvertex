@@ -58,6 +58,12 @@ public class StudentRewardServiceImpl implements StudentRewardService {
     }
 
     @Override
+    public List<StudentRewardDTO> getRewardsByStudentId(String studentId) {
+        List<StudentRewardEntity> studentSpecificEntities = studentRewardDao.findByIdStudentId(studentId);
+        return entityDTOConversion.toStudentRewardDTOList(studentSpecificEntities);
+    }
+
+    @Override
     public List<StudentRewardDTO> getAllStudentRewards() {
         return entityDTOConversion.toStudentRewardDTOList(studentRewardDao.findAll());
     }

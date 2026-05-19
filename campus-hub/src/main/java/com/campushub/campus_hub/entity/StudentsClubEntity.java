@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 
 @AllArgsConstructor
@@ -13,20 +12,23 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "students_club")
 public class StudentsClubEntity {
+
     @EmbeddedId
-    private StudentsClubId id;
+    private StudentsClubId id = new StudentsClubId();
 
     @ManyToOne
     @MapsId("studentId")
-    @JoinColumn(name = "student_id")
+    @JoinColumn(name = "student_id", nullable = false)
     private StudentEntity student;
 
     @ManyToOne
     @MapsId("clubId")
-    @JoinColumn(name = "club_id")
+    @JoinColumn(name = "club_id", nullable = false)
     private ClubEntity club;
 
-    private LocalDate joined_date;
-    private Boolean active_status;
+    @Column(name = "joined_date", nullable = false)
+    private LocalDate joinedDate;
 
+    @Column(name = "active_status", nullable = false)
+    private Boolean activeStatus;
 }

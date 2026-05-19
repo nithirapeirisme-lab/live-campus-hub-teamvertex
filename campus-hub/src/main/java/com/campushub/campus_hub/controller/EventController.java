@@ -3,6 +3,7 @@ package com.campushub.campus_hub.controller;
 import com.campushub.campus_hub.dto.EventDTO;
 import com.campushub.campus_hub.dao.EventDao;
 import com.campushub.campus_hub.service.EventService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class EventController {
     private final EventDao eventDao;
 
     @PostMapping
-    public ResponseEntity<String> saveEvent(@RequestBody EventDTO eventDTO){
+    public ResponseEntity<String> saveEvent(@Valid @RequestBody EventDTO eventDTO){
         eventService.saveEvent(eventDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

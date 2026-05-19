@@ -4,6 +4,7 @@ import com.campushub.campus_hub.dto.LocationDTO;
 import com.campushub.campus_hub.dao.LocationDao;
 import com.campushub.campus_hub.exceptions.LocationNotFoundException;
 import com.campushub.campus_hub.service.LocationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class LocationController {
     private final LocationDao locationDao;
 
     @PostMapping
-    public ResponseEntity<String> registerLocation(@RequestBody LocationDTO locationDTO){
+    public ResponseEntity<String> registerLocation(@Valid @RequestBody LocationDTO locationDTO){
         locationService.registerLocation(locationDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
 
