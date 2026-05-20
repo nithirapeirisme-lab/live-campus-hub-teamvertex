@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CINEC HUB | Student Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<header style="display: flex; justify-content: space-between; align-items: center;">
+    <div class="logo">CINEC STUDENT PORTAL</div>
+    <button class="btn btn-outline" style="color: white; border-color: white;" onclick="logoutProcess()">Logout</button>
+</header>
+
+<div class="container" style="margin-top: 30px; margin-bottom: 50px;">
+    <div class="card" style="margin-bottom: 25px;">
+        <h3>Welcome Back, <span id="user-display">Student</span>!</h3>
+        <p style="color: var(--text-muted); margin-top: 5px;">Track your attendance check-ins, monitor live campus facility status variations, and accumulate performance reward tokens.</p>
+    </div>
+
+    <h3 style="margin-bottom: 15px; color: var(--cinec-navy); font-weight: 700;">📍 Campus Facilities & Attendance Check-In</h3>
+    <div class="grid">
+        
+        <div class="card action-card" onclick="performCheckIn('LIB_01')" style="text-align: center; padding: 30px; cursor: pointer;">
+            <i class="fas fa-book-reader" style="font-size: 2.5rem; color: var(--cinec-sky); margin-bottom: 12px; display: inline-block;"></i>
+            <h4 style="font-size: 1.1rem; margin-bottom: 5px;">Main Campus Library</h4>
+            <p id="lib-status-display" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Status: Fetching...</p>
+            <button class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem; width: 100%;">Tap to Check In</button>
+        </div>
+
+        <div class="card action-card" onclick="performCheckIn('GYM_01')" style="text-align: center; padding: 30px; cursor: pointer;">
+            <i class="fas fa-dumbbell" style="font-size: 2.5rem; color: var(--cinec-sky); margin-bottom: 12px; display: inline-block;"></i>
+            <h4 style="font-size: 1.1rem; margin-bottom: 5px;">Student Fitness Center</h4>
+            <p id="gym-status-display" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Status: Fetching...</p>
+            <button class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem; width: 100%;">Tap to Check In</button>
+        </div>
+
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
