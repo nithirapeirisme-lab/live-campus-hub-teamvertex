@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CINEC HUB | Student Dashboard</title>
+    <title>CINEC HUB | Student Center</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -16,30 +16,146 @@
     <button class="btn btn-outline" style="color: white; border-color: white;" onclick="logoutProcess()">Logout</button>
 </header>
 
-<div class="container" style="margin-top: 30px; margin-bottom: 50px;">
-    <div class="card" style="margin-bottom: 25px;">
-        <h3>Welcome Back, <span id="user-display">Student</span>!</h3>
-        <p style="color: var(--text-muted); margin-top: 5px;">Track your attendance check-ins, monitor live campus facility status variations, and accumulate performance reward tokens.</p>
-    </div>
 
-    <h3 style="margin-bottom: 15px; color: var(--cinec-navy); font-weight: 700;">📍 Campus Facilities & Attendance Check-In</h3>
-    <div class="grid">
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">Student Hub</div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" onclick="switchStudentTab('tab-profile')"><i class="fas fa-user-circle"></i> Profile Dashboard</a>
+            <a class="nav-item" onclick="switchStudentTab('tab-checkin')"><i class="fas fa-qrcode"></i> Scan & History</a>
+            <a class="nav-item" onclick="switchStudentTab('tab-buses')"><i class="fas fa-bus"></i> Campus Transit</a>
+            <a class="nav-item" onclick="switchStudentTab('tab-clubs')"><i class="fas fa-users"></i> University Clubs</a>
+            <a class="nav-item" onclick="switchStudentTab('tab-events')"><i class="fas fa-calendar-alt"></i> Upcoming Events</a>
+            <a class="nav-item" onclick="switchStudentTab('tab-locations')"><i class="fas fa-map-marker-alt"></i> Facility Statuses</a>
+            <a class="nav-item" onclick="switchStudentTab('tab-directory')"><i class="fas fa-address-book"></i> Campus Directory</a>
+            <a class="nav-item" onclick="switchStudentTab('tab-rewards')"><i class="fas fa-award"></i> My Rewards</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
         
-        <div class="card action-card" onclick="performCheckIn('LIB_01')" style="text-align: center; padding: 30px; cursor: pointer;">
-            <i class="fas fa-book-reader" style="font-size: 2.5rem; color: var(--cinec-sky); margin-bottom: 12px; display: inline-block;"></i>
-            <h4 style="font-size: 1.1rem; margin-bottom: 5px;">Main Campus Library</h4>
-            <p id="lib-status-display" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Status: Fetching...</p>
-            <button class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem; width: 100%;">Tap to Check In</button>
-        </div>
+        <section id="tab-profile" class="student-panel" style="display: block;">
+            <div class="card" style="margin-bottom: 20px;">
+                <h3>Welcome Back, <span id="user-display">Student</span>! 🎓</h3>
+                <p style="color: var(--text-muted);">Manage your personal academic registration details below.</p>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr 2fr; gap: 20px;">
+                <div class="card" style="text-align: center;">
+                    <img id="profile-pic-preview" src="https://via.placeholder.com/150" alt="Avatar" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 4px solid var(--cinec-sky); margin-bottom: 15px;">
+                    <input type="file" id="img-input" style="display: none;" accept="image/*">
+                    <button class="btn btn-outline" style="width: 100%; margin-bottom: 10px;" onclick="document.getElementById('img-input').click()"><i class="fas fa-upload"></i> Upload Photo</button>
+                </div>
+                <div class="card">
+                    <h4>Personal Information Details</h4>
+                    <div style="display: flex; gap: 10px; margin: 15px 0;">
+                        <div style="flex: 1;"><label style="font-size:0.8rem; font-weight:bold;">First Name</label><input type="text" id="prof-fname" class="form-input"></div>
+                        <div style="flex: 1;"><label style="font-size:0.8rem; font-weight:bold;">Last Name</label><input type="text" id="prof-lname" class="form-input"></div>
+                    </div>
 
-        <div class="card action-card" onclick="performCheckIn('GYM_01')" style="text-align: center; padding: 30px; cursor: pointer;">
-            <i class="fas fa-dumbbell" style="font-size: 2.5rem; color: var(--cinec-sky); margin-bottom: 12px; display: inline-block;"></i>
-            <h4 style="font-size: 1.1rem; margin-bottom: 5px;">Student Fitness Center</h4>
-            <p id="gym-status-display" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Status: Fetching...</p>
-            <button class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem; width: 100%;">Tap to Check In</button>
-        </div>
+                    <div class="form-group"><label style="font-size:0.8rem; font-weight:bold;">Email Address</label><input type="email" id="prof-email" class="form-input"></div>
+                    <div class="form-group"><label style="font-size:0.8rem; font-weight:bold;">Phone Number</label><input type="text" id="prof-phone" class="form-input"></div>
+                    <div class="form-group"><label style="font-size:0.8rem; font-weight:bold;">Enrollment Year</label><input type="number" id="prof-year" class="form-input"></div>
+                    <div class="form-group">
+                        <label style="font-size:0.8rem; font-weight:bold;">Assigned University Department</label>
+                        <select id="prof-dept" class="form-input"></select>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 10px;" onclick="updateMyProfileDetails()"><i class="fas fa-save"></i> Save Changes</button>
+                </div>
+            </div>
+        </section>
 
-    </div>
+        <section id="tab-checkin" class="student-panel" style="display: none;">
+            <div class="card" style="margin-bottom: 20px; text-align: center;">
+                <h3><i class="fas fa-qrcode"></i> Digital Node Check-In Gateway</h3>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Simulate checking into campus nodes via QR identification scans.</p>
+                <div style="max-width: 400px; margin: 0 auto;">
+                    <input type="text" id="qr-scanned-location" class="form-input" placeholder="Scan or enter Node ID (e.g., LIB_01, GYM_01)" style="text-align: center; font-size: 1.2rem; margin-bottom: 15px;">
+                    <button class="btn btn-primary" style="width: 100%;" onclick="submitNodeCheckIn()"><i class="fas fa-sign-in-alt"></i> Execute Gateway Check-In</button>
+                </div>
+
+
+            </div>
+            <div class="card">
+                <h4>My Node Access Logs History</h4>
+                <div style="overflow-x: auto; margin-top: 15px;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #cbd5e1; color: var(--cinec-navy);">
+                                <th style="padding: 10px;">Log Reference ID</th>
+                                <th style="padding: 10px;">Location Node</th>
+                                <th style="padding: 10px;">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="checkin-history-rows"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-buses" class="student-panel" style="display: none;">
+            <div class="card">
+                <h3><i class="fas fa-bus"></i> Core University Transit Schedules</h3>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Live compilation of registered campus transport services lines.</p>
+                <div class="grid" id="transit-bus-cards-grid"></div>
+            </div>
+        </section>
+
+
+        <section id="tab-clubs" class="student-panel" style="display: none;">
+            <div class="card">
+                <h3><i class="fas fa-users"></i> University Club Alliances</h3>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Browse student organizations and handle active enrollments.</p>
+                <div class="grid" id="clubs-listing-grid"></div>
+            </div>
+        </section>
+
+        <section id="tab-events" class="student-panel" style="display: none;">
+            <div class="card">
+                <h3><i class="fas fa-calendar-alt"></i> Registered Campus Activities & Events</h3>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Stay up to date with scheduled upcoming events.</p>
+                <div class="grid" id="events-listing-grid"></div>
+            </div>
+        </section>
+
+        <section id="tab-locations" class="student-panel" style="display: none;">
+            <div class="card" style="margin-bottom: 20px;">
+                <h3><i class="fas fa-map-marker-alt"></i> Facility Occupancy & Operational Statuses</h3>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Live capacity metrics of core structural university landmarks.</p>
+                <div class="grid" id="locations-operational-grid"></div>
+            </div>
+            <div class="card">
+                <h4>Inspect Particular Location Blueprint Details</h4>
+                <div style="display: flex; gap: 10px; margin: 15px 0;">
+                    <input type="text" id="search-location-id" class="form-input" placeholder="Enter Location ID (e.g. GYM_01)" style="flex: 1;">
+                    <button class="btn btn-outline" onclick="querySpecificLocationInfo()"><i class="fas fa-search"></i> Inspect Node</button>
+                </div>
+                <div id="location-inspection-report" style="padding: 15px; border-radius: 8px; background: #f8fafc; display: none;"></div>
+            </div>
+        </section>
+
+
+
+        <section id="tab-directory" class="student-panel" style="display: none;">
+            <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                <button class="btn btn-primary" id="toggle-student-dir-btn" onclick="toggleDirectoryMode('STUDENTS')" style="flex: 1;">Registered Student Scholars</button>
+                <button class="btn btn-outline" id="toggle-staff-dir-btn" onclick="toggleDirectoryMode('STAFF')" style="flex: 1;">Academic & Administrative Staff</button>
+            </div>
+            <div class="card">
+                <h4 id="directory-heading-text">Registered Members Profiles</h4>
+                <div class="grid" id="directory-content-cards" style="margin-top: 15px;"></div>
+            </div>
+        </section>
+
+        <section id="tab-rewards" class="student-panel" style="display: none;">
+            <div class="card">
+                <h3><i class="fas fa-award"></i> My Earned Reward Tokens Performance Catalog</h3>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Token balances gathered from check-in milestones.</p>
+                <div class="grid" id="rewards-tokens-grid"></div>
+            </div>
+        </section>
+
+    </main>
+    
 </div>
 
 <script src="script.js"></script>
