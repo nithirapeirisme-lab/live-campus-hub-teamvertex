@@ -6,64 +6,75 @@
     <title>CINEC HUB | Register</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body style="background: linear-gradient(135deg, #003152 0%, #00aeeF 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 40px 20px;">
 
 <div id="toast" class="toast"></div>
 
+
+
 <div class="card" style="width: 100%; max-width: 450px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+    <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 15px; transition: 0.2s;" onmouseover="this.style.color='var(--cinec-sky)'" onmouseout="this.style.color='var(--text-muted)'">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+
     <h2 style="color: var(--cinec-navy); text-align: center; margin-bottom: 25px;">Create Account</h2>
     
     <div class="form-group">
         <label style="font-weight: bold; font-size: 0.9rem;">Account Position Classification</label>
-        <select id="signup-role" class="form-input">
+        <select id="signup-role" class="form-input" onchange="toggleSignupFields()">
             <option value="STUDENT">Student Scholar Profile</option>
             <option value="STAFF">Administrative Staff Member</option>
         </select>
     </div>
 
+
     <div class="form-group">
-        <label style="font-weight: bold; font-size: 0.9rem;">Desired System Username ID</label>
-        <input type="text" id="signup-id" class="form-input" placeholder="STU_001">
+        <label style="font-weight: bold; font-size: 0.9rem;">User ID / Registration Code</label>
+        <input type="text" id="signup-id" class="form-input" placeholder="STU_xxx or STF_xxx">
     </div>
 
     <div class="form-group">
-        <label style="font-weight: bold; font-size: 0.9rem;">Security Access Password</label>
+        <label style="font-weight: bold; font-size: 0.9rem;">Security Password</label>
         <input type="password" id="signup-pass" class="form-input" placeholder="••••••••">
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
-        <div>
-            <label style="font-weight: bold; font-size: 0.85rem; display: block; margin-bottom: 6px;">First Name</label>
-            <input type="text" id="signup-fname" class="form-input">
-        </div>
-        <div>
-            <label style="font-weight: bold; font-size: 0.85rem; display: block; margin-bottom: 6px;">Last Name</label>
-            <input type="text" id="signup-lname" class="form-input">
-        </div>
+
+
+    <div style="display: flex; gap: 15px; width: 100%;">
+    <div class="form-group" style="flex: 1;">
+        <label style="font-weight: bold; font-size: 0.9rem;">First Name</label>
+        <input type="text" id="signup-first" class="form-input" style="width: 100%;">
     </div>
 
-    <div class="form-group">
-        <label style="font-weight: bold; font-size: 0.9rem;">Primary Email Address</label>
-        <input type="email" id="signup-email" class="form-input" placeholder="name@cinechub.com">
+    <div class="form-group" style="flex: 1;">
+        <label style="font-weight: bold; font-size: 0.9rem;">Last Name</label>
+        <input type="text" id="signup-last" class="form-input" style="width: 100%;">
     </div>
+</div>
 
     <div class="form-group">
-        <label style="font-weight: bold; font-size: 0.9rem;">Contact Phone Number</label>
-        <input type="text" id="signup-phone" class="form-input" placeholder="07XXXXXXXX">
+        <label style="font-weight: bold; font-size: 0.9rem;">Email Address Address</label>
+        <input type="email" id="signup-email" class="form-input" placeholder="name@domain.com">
     </div>
 
     <div id="student-extra-fields">
         <div class="form-group">
+            <label style="font-weight: bold; font-size: 0.9rem;">Contact Phone Number</label>
+            <input type="text" id="signup-phone" class="form-input">
+        </div>
+        <div class="form-group">
             <label style="font-weight: bold; font-size: 0.9rem;">Current Enrollment Year</label>
-            <input type="number" id="signup-year" class="form-input" placeholder="2026">
+            <input type="number" id="signup-year" class="form-input">
         </div>
         <div class="form-group">
             <label style="font-weight: bold; font-size: 0.9rem;">Department Code Identity</label>
-            <input type="text" id="signup-dept" class="form-input" placeholder="BIT">
+            <input type="text" id="signup-dept" class="form-input" placeholder="DXXX">
         </div>
     </div>
 
-    <button class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;" onclick="signupProcess()">Complete Registration</button>
+
+    <button class="btn btn-primary" style="width: 100%; padding: 12px;" onclick="signupProcess()">Complete Registration</button>
     
     <div style="text-align: center; margin-top: 20px; font-size: 0.9rem;">
         <span style="color: var(--text-muted);">Already have an account? </span>
@@ -71,14 +82,12 @@
     </div>
 </div>
 
+
+
 <script src="script.js"></script>
 <script>
-    // Keep the student/staff field toggle listener running on load
     window.addEventListener('DOMContentLoaded', () => {
-        const roleSelect = document.getElementById('signup-role');
-        if (roleSelect) {
-            roleSelect.addEventListener('change', toggleSignupFields);
-        }
+        toggleSignupFields();
     });
 </script>
 </body>
