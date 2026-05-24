@@ -98,14 +98,31 @@
                         <label>Last Name</label>
                         <input type="text" id="stu-lname" placeholder="e.g., Silva" class="form-input">
                     </div>
-
-
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="text" id="stu-password" placeholder="e.g.@Sachini123" class="form-input">
+                    </div>
                     <div class="form-group">
                         <label>Email Address</label>
                         <input type="email" id="stu-email" placeholder="name@cinec.edu" class="form-input">
                     </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="email" id="stu-phone" placeholder="0716500760" class="form-input">
+                    </div>
+                    <!-- Added missing fields -->
+                    <div class="form-group">
+                        <label>Enrolled Year</label>
+                        <input type="number" id="stu-year" placeholder="e.g., 2026" class="form-input" value="2026">
+                    </div>
+                    <div class="form-group">
+                        <label>Department ID</label>
+                        <input type="text" id="stu-dept" placeholder="e.g., COM_01" class="form-input">
+                    </div>
                     <button class="btn btn-primary" style="width:100%; padding:12px; font-weight:bold; margin-top:10px;" onclick="saveStudent()">Commit Student Data</button>
-                    <button class="btn btn-outline" style="width:100%; padding:10px; font-weight:bold; margin-top:8px;" onclick="triggerSampleBatchPayload()">Simulate Multiple Batch Ingestion</button>
+                    <button class="btn btn-outline" onclick="openBatchIngestionModal()" style="padding: 10px 16px; font-weight: 500; background: #f8fafc; color: #00aeef; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-layer-group"></i> Multiple Batch Ingestion
+                    </button>
                 </div>
                 <div class="card">
                     <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Active System Student Directory</h3>
@@ -132,7 +149,7 @@
                 <h3 style="color: var(--cinec-navy); margin-bottom: 15px;" id="dept-form-title">Campus Department Structures</h3>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Department Code ID</label>
+                        <label>Department ID</label>
                         <input type="text" id="dept-id" placeholder="e.g., COM_01" class="form-input">
                     </div>
                     <div class="form-group">
@@ -145,17 +162,24 @@
                     <button class="btn btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="updateDepartment()">Update Parameters</button>
                 </div>
                 
-                <h4 style="color: var(--cinec-navy); margin-bottom: 10px; font-size:1rem;">Registered Campus Tracks Block</h4>
-                <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: white;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                <div class="card">
+                    <h3>Registered Campus Tracks Block</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
                         <thead>
-                            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                                <th style="padding: 12px; color: var(--cinec-navy);">Department ID Code</th>
-                                <th style="padding: 12px; color: var(--cinec-navy);">Track Name Descriptor</th>
-                                <th style="padding: 12px; color: var(--cinec-navy);" class="action-th">Actions</th>
+                            <tr style="background: #f8fafc; text-align: left;">
+                                <th style="padding: 12px; color: #1e3a8a;">Department ID</th>
+                                <th style="padding: 12px; color: #1e3a8a;">Department Name</th>
+                                <th style="padding: 12px; color: #1e3a8a; text-align: right;">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="departments-table-body"></tbody>
+
+                        <tbody id="department-table-body">
+                            <tr>
+                                <td colspan="3" style="text-align: center; padding: 20px; color: #64748b;">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading campus tracks...
+                                </td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -165,29 +189,38 @@
             <div class="card">
                 <h3 style="color: var(--cinec-navy); margin-bottom: 15px;" id="event-form-title">Campus Event Orchestrator</h3>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Event System ID Code</label>
-                        <input type="text" id="event-id" placeholder="e.g., EVT_99" class="form-input">
-                    </div>
+                    
 
                     <div class="form-group">
                         <label>Event Name Title</label>
                         <input type="text" id="event-name" placeholder="e.g., Padura Music Festival" class="form-input">
                     </div>
-                </div>
-                <div class="form-row">
+
                     <div class="form-group">
                         <label>Scheduled Date</label>
                         <input type="date" id="event-date" class="form-input">
                     </div>
+                </div>
+                <div class="form-row">
+
                     <div class="form-group">
-                        <label>Target Venue Location</label>
+                        <label>Scheduled Time</label>
+                        <input type="time" id="event-time" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Venue</label>
                         <input type="text" id="event-location" placeholder="e.g., Main Hall Auditorium" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Organizing Comitee</label>
+                        <input type="text" id="event-org" class="form-input">
                     </div>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:15px; margin-bottom: 20px;">
-                    <button class="btn btn-primary" style="flex:1; padding:12px; font-weight:bold;" onclick="saveEvent()">Broadcast Event Node</button>
-                    <button class="btn btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="updateEvent()">Push Modified Updates</button>
+                    <button class="btn btn-primary" style="flex:1; padding:12px; font-weight:bold;" onclick="saveEvent()">Save Event</button>
+                    <button class="btn btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="updateEvent()('${event.eventId}')">Push Modified Updates</button>
                 </div>
 
                 <h4 style="color: var(--cinec-navy); margin-bottom: 10px; font-size:1rem;">Staged Campus Events Calendar</h4>
@@ -218,19 +251,25 @@
                 <div class="card">
                     <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Deploy Loyalty Reward</h3>
                     <div class="form-group">
-                        <label>Reward Token Identifier Code</label>
+                        <label>Reward ID</label>
                         <input type="text" id="reward-id" placeholder="e.g., REW_09" class="form-input">
                     </div>
                     <div class="form-group">
-                        <label>Points Capital Matrix Value</label>
+                        <label>Reward Name</label>
+                        <input type="text" id="reward-name" placeholder="e.g., 20% discount" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Points required</label>
                         <input type="number" id="reward-points" placeholder="e.g., 200" class="form-input">
                     </div>
                     <div class="form-group">
                         <label>Discount Value Percentage (%)</label>
                         <input type="number" id="reward-discount" placeholder="e.g., 10" class="form-input">
                     </div>
-                    <button class="btn btn-primary" style="width:100%; padding:12px; font-weight:bold; margin-top:10px;" onclick="createReward()">Publish Matrix Entry</button>
+                    <button class="btn btn-primary" style="width:100%; padding:12px; font-weight:bold; margin-top:10px;" onclick="saveRewardListing()">Save Reward</button>
+                    <button class="btn btn-outline" style="width:100%; padding:12px; font-weight:bold; margin-top:10px; border: 1px solid var(--cinec-sky); color: var(--cinec-sky);" onclick="editRewardObj()">Update Reward</button>
                 </div>
+
 
                 <div class="card">
                     <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Available Loyalty Rewards Items</h3>
@@ -238,10 +277,11 @@
                         <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
                             <thead>
                                 <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                                    <th style="padding: 12px; color: var(--cinec-navy);">Reward Token ID</th>
-                                    <th style="padding: 12px; color: var(--cinec-navy);">Points Metric Required</th>
-                                    <th style="padding: 12px; color: var(--cinec-navy);">Discount Value Percentage</th>
-                                    <th style="padding: 12px; color: var(--cinec-navy);" class="action-th">Actions</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left; width: 15%;">Reward ID</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left; width: 25%;">Reward Name</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left; width: 20%;">Points Required</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left; width: 20%;">Discount Value Percentage</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: center; width: 15%;">Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="rewards-table-body"></tbody>
@@ -267,9 +307,10 @@
                     <div class="form-group" style="margin-bottom: 12px;">
                         <label>Current Status</label>
                         <select id="config-bus-status" class="form-input">
-                            <option value="ACTIVE">ACTIVE</option>
+                            <option value="ACTIVE">ON_TIME</option>
                             <option value="DELAYED">DELAYED</option>
-                            <option value="MAINTENANCE">MAINTENANCE</option>
+                            <option value="MAINTENANCE">CANCELLED</option>
+                            <option value="MAINTENANCE">ARRIVED</option>
                         </select>
                     </div>
                     <div class="form-group" style="margin-bottom: 12px;">
@@ -289,7 +330,7 @@
                         <label>Arrival Time</label>
                         <input type="text" id="config-bus-arrtime" class="form-input" placeholder="e.g., 08:45 AM">
                     </div>
-                    <button class="btn btn-primary" onclick="saveTransitFleetListing()">Save Configuration</button>
+                    <button class="btn btn-primary" onclick="saveBus()">Save Configuration</button>
                 </div>
                 <div class="card">
                     <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Active Transit Telemetry Grid</h3>
@@ -319,17 +360,17 @@
                 <div class="card">
                     <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Charter New Campus Society</h3>
                     <div class="form-group">
-                        <label>Club Society System ID</label>
+                        <label>Club ID</label>
                         <input type="text" id="club-id" placeholder="e.g., CLUB_CS" class="form-input">
                     </div>
 
                     <div class="form-group">
-                        <label>Society Public Domain Name</label>
+                        <label>Club Name</label>
                         <input type="text" id="club-name" placeholder="e.g., Computer Science Guild" class="form-input">
                     </div>
                     <div class="form-group">
-                        <label>Active Members Counter Registry</label>
-                        <input type="number" id="club-members" placeholder="e.g., 150" class="form-input">
+                        <label>Status (Active or Not )</label>
+                        <input type="text" id="club-status" placeholder="e.g., true or false" class="form-input">
                     </div>
                     <div style="display:flex; gap:8px; margin-top:10px;">
                         <button class="btn btn-primary" style="flex:1; padding:12px; font-weight:bold;" onclick="saveClub()">Save Club</button>
@@ -361,19 +402,19 @@
                 <div class="card">
                     <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Deploy New Campus Location Hub</h3>
                     <div class="form-group">
-                        <label>Location Area Reference Code ID</label>
+                        <label>Location ID</label>
                         <input type="text" id="loc-id" placeholder="e.g., GYM_01" class="form-input">
                     </div>
 
-
                     <div class="form-group">
-                        <label>Location Facility Structure Name</label>
+                        <label>Location Name</label>
                         <input type="text" id="loc-name" placeholder="e.g., Main Fitness Facility Complex" class="form-input">
                     </div>
                     <div class="form-group">
-                        <label>Active Operational Hours Status Tracker</label>
-                        <input type="text" id="loc-status" placeholder="e.g., Open (Standard Hours)" class="form-input">
+                        <label>Capacity</label>
+                        <input type="text" id="loc-capacity" placeholder="e.g., 150" class="form-input">
                     </div>
+                    
                     <div style="display:flex; gap:8px; margin-top:10px;">
                         <button class="btn btn-primary" style="flex:1; padding:12px; font-weight:bold;" onclick="saveLocationObj()">Save Location</button>
                         <button class="btn btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="updateLocationObj()">Update Details</button>
@@ -386,8 +427,9 @@
                         <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
                             <thead>
                                 <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                                    <th style="padding: 12px; color: var(--cinec-navy);">Location ID Code</th>
-                                    <th style="padding: 12px; color: var(--cinec-navy);">Facility Landmark Name</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy);">Location ID</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy);">Landmark Name</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy);">Capacity</th>
                                     <th style="padding: 12px; color: var(--cinec-navy);">Live Operational Status</th>
                                     <th style="padding: 12px; color: var(--cinec-navy);" class="action-th">Actions</th>
                                 </tr>
