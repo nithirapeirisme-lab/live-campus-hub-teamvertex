@@ -27,7 +27,7 @@ public class StudentsClubEntity {
     private ClubEntity club;
 
     @Column(name = "joined_date", nullable = false)
-    private LocalDate joinedDate;
+    private LocalDate joined_date;
 
     @Column(name = "active_status", nullable = false)
     private Boolean activeStatus;

@@ -1,5 +1,6 @@
 package com.campushub.campus_hub.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -17,6 +18,7 @@ public class EventDTO {
     private String event_id;
 
     @NotBlank(message = "Event title cannot be blank")
+    @JsonProperty("eventTitle")
     private String eventTitle;
 
     @NotNull(message = "Event date is required")

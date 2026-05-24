@@ -18,11 +18,11 @@ import java.util.List;
 public class StudentsClubController {
     private final StudentsClubService studentsClubService;
 
-    //admin can join the students to the clubs via this method
+    // Admin logs a student into a club via this method (Uses data inside payload body)
     @PostMapping("/join-auth")
-    public ResponseEntity<Void> joinClub(@Valid @RequestBody StudentsClubDTO studentsClubDTO, Authentication authentication){
-        studentsClubDTO.setStudent_id(authentication.getName());
-        studentsClubService.saveStudentsClub((StudentsClubDTO) studentsClubDTO);
+    public ResponseEntity<Void> joinClub(@Valid @RequestBody StudentsClubDTO studentsClubDTO){
+        // FIX: Removed casting and stopped overwriting student_id with admin credentials
+        studentsClubService.saveStudentsClub(studentsClubDTO);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -31,23 +31,19 @@ public class StudentsClubController {
         return ResponseEntity.ok(studentsClubService.getStudentsClubs());
     }
 
-    /*@PutMapping("/{clubId}")
-        public ResponseEntity<Void> updateMembership(@PathVariable String clubId, Authentication authentication){
-        String student_id = authentication.getName();
-        studentsClubService.updateStudentsClub(student_id, clubId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-    }*/
-
     @DeleteMapping("/leave")
-    public ResponseEntity<Void> leaveClub(@RequestBody StudentsClubDTO studentsClubDTO, Authentication authentication){
+    public ResponseEntity<Void> leaveClub(@Valid @RequestBody StudentsClubDTO studentsClubDTO, Authentication authentication){
+        // Automatically tie the action to whoever is logged in to securely leave a club
         studentsClubDTO.setStudent_id(authentication.getName());
         studentsClubService.deleteStudentsClub(studentsClubDTO);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    //this is for students, they can join to the clubs by themselves
+    // Students use this endpoint to register themselves safely
     @PostMapping("/join")
-    public ResponseEntity<StudentsClubDTO> join(@RequestBody StudentsClubDTO request) {
+    public ResponseEntity<StudentsClubDTO> join(@Valid @RequestBody StudentsClubDTO request, Authentication authentication) {
+        // FIX: Added security check to make sure students can only join clubs as themselves
+        request.setStudent_id(authentication.getName());
         return ResponseEntity.ok(studentsClubService.joinClub(request));
     }
 

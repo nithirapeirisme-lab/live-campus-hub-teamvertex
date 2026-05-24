@@ -44,7 +44,7 @@ public class StudentsClubServiceImpl implements StudentsClubService {
         StudentsClubId id = new StudentsClubId(dto.getStudent_id(), dto.getClub_id());
         entity.setId(id);
 
-        entity.setJoinedDate(dto.getJoined_date() != null ? dto.getJoined_date() : LocalDate.now());
+        entity.setJoined_date(dto.getJoined_date() != null ? dto.getJoined_date() : LocalDate.now());
         entity.setActiveStatus(dto.getActiveStatus() != null ? dto.getActiveStatus() : true);
 
         StudentsClubEntity saved = studentsClubDao.save(entity);
@@ -83,7 +83,7 @@ public class StudentsClubServiceImpl implements StudentsClubService {
         StudentsClubId id = new StudentsClubId(dto.getStudent_id(), dto.getClub_id());
         entity.setId(id);
 
-        entity.setJoinedDate(LocalDate.now());
+        entity.setJoined_date(LocalDate.now());
         entity.setActiveStatus(true);
 
         StudentsClubEntity saved = studentsClubDao.save(entity);

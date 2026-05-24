@@ -22,6 +22,7 @@ public class StudentsClubDTO implements Serializable {
     private String Club_id;
 
     @NotNull(message = "Joined date is required")
+    @JsonProperty("joined_date")
     private LocalDate joined_date;
 
     @NotNull(message = "Active status is required")
