@@ -19,6 +19,7 @@ window.addEventListener('DOMContentLoaded', () => {
     } else if (currentPath.includes('student.html')) {
         refreshFacilityStatus();
         getRewards();
+        loadMyProfileDetails();
         const displayName = localStorage.getItem('userDisplayName') || "Student";
         safeSetInnerText('user-display', displayName);
     }
@@ -59,21 +60,26 @@ function showToast(message) {
 
 
 
-function showStaffSection(sectionId) {
+function showStaffSection(sectionId, elementLink) {
     const sections = ['admin-overview', 'admin-users', 'admin-clubs', 'admin-facilities', 'admin-locations', 'admin-rewards', 'admin-transit'];
     sections.forEach(id => {
         const block = document.getElementById(id);
         if (block) block.style.display = (id === sectionId) ? 'block' : 'none';
     });
 
-    const links = document.querySelectorAll('.sidebar-menu a');
-    links.forEach(link => {
-        if (link.getAttribute('onclick')?.includes(sectionId)) {
-            link.classList.add('active');
-        } else {
-            link.classList.remove('active');
-        }
-    });
+    const allNavLinks = document.querySelectorAll('.sidebar-nav .nav-item');
+    allNavLinks.forEach(link => link.classList.remove('active'));
+
+    if (elementLink) {
+        elementLink.classList.add('active');
+    } else {
+        const fallbackLinks = document.querySelectorAll('.sidebar-nav .nav-item');
+        fallbackLinks.forEach(link => {
+            if (link.getAttribute('onclick')?.includes(sectionId)) {
+                link.classList.add('active');
+            }
+        });
+    }
 }
 
 function toggleSignupFields() {
@@ -433,6 +439,122 @@ async function loadUserManagementTabs() {
     } catch (e) { console.error("Error formatting staff row alignments:", e); }
 }
 
+// --- NEW FUNCTION: Run this when an Edit or Select button is triggered ---
+function populateStudentUpdateForm(studentId, currentPassword) {
+    console.log("Pre-populating student profile form for ID:", studentId);
+
+    // Capture the newly added input form elements
+    const idField = document.getElementById('update-student-id');
+    const passwordField = document.getElementById('update-student-password');
+
+    // Populate them with structural values to prevent backend null errors
+    if (idField) {
+        idField.value = studentId;
+    }
+    if (passwordField) {
+        // Populates current password string or a placeholder
+        passwordField.value = currentPassword || "123456"; 
+    }
+}
+
+// --- NEW FUNCTION: Bind this to your Save / Update Form Button ---
+async function updateStudentDetails() {
+    // 1. Read directly from the newly added fields
+    const studentId = document.getElementById('update-student-id')?.value.trim();
+    const password = document.getElementById('update-student-password')?.value;
+    
+    // Read your other profile description blocks if necessary
+    const firstName = document.getElementById('update-student-fname')?.value.trim() || "";
+    const lastName = document.getElementById('update-student-lname')?.value.trim() || "";
+
+    // 2. Local guardrail validation block to intercept null fields before they reach the server
+    if (!studentId || !password) {
+        alert("Validation Error: Student ID and Password fields cannot be empty!");
+        return;
+    }
+
+    // 3. Assemble JSON payload matching your Java StudentDTO serialization properties exactly
+    const payload = {
+        studentId: studentId,
+        password: password,
+        firstName: firstName,
+        lastName: lastName
+    };
+
+    console.log("Dispatching updated JSON payload stream:", payload);
+
+    try {
+        const res = await fetch(`${BASE_URL}/api/v1/students`, {
+            method: 'PUT',
+            headers: getAuthHeaders(), // Secure structural headers containing Bearer JWT
+            body: JSON.stringify(payload)
+        });
+
+        if (res.ok || res.status === 200) {
+            showToast("Student profile data updated successfully!");
+            if (typeof loadUserManagementTabs === 'function') loadUserManagementTabs(); 
+        } else {
+            const errResponse = await res.text();
+            console.error(`Backend API validation rejection (${res.status}):`, errResponse);
+            alert(`Update Rejected by Server: ${errResponse}`);
+        }
+    } catch (e) {
+        console.error("Network link failure during student update stream:", e);
+        alert("Communication failure: Backend server could not be reached.");
+    }
+}
+
+// Add this function to load the logged-in student's data into the form
+async function loadMyProfileDetails() {
+    try {
+        // Calls your secure backend student endpoint
+        const response = await fetch(`${BASE_URL}/api/v1/students/me`, { 
+            method: 'GET', 
+            headers: getAuthHeaders() 
+        });
+
+        if (response.ok) {
+            const student = await response.json();
+
+            // Find the HTML input fields by their IDs and display the data
+            if (document.getElementById('prof-Id')) {
+                document.getElementById('prof-Id').value = student.studentId || student.student_id || "";
+            }
+            if (document.getElementById('prof-pwd')) {
+                document.getElementById('prof-pwd').value = student.student_pwd || "";
+            }
+            if (document.getElementById('prof-fname')) {
+                document.getElementById('prof-fname').value = student.first_name || "";
+            }
+            if (document.getElementById('prof-lname')) {
+                document.getElementById('prof-lname').value = student.last_name || "";
+            }
+            if (document.getElementById('prof-email')) {
+                document.getElementById('prof-email').value = student.email || "";
+            }
+            if (document.getElementById('prof-phone')) {
+                document.getElementById('prof-phone').value = student.phone || "";
+            }
+            if (document.getElementById('prof-year')) {
+                document.getElementById('prof-year').value = student.enrolled_Year || "";
+            }
+            if (document.getElementById('prof-dept')) {
+                document.getElementById('prof-dept').value = student.department || "";
+            }
+            
+            // Also update the welcome header text dynamically
+            const displayName = `${student.firstName || ''} ${student.lastName || ''}`.trim();
+            if (document.getElementById('user-display')) {
+                document.getElementById('user-display').innerText = displayName || "Student";
+            }
+        } else {
+            console.error("Failed to fetch student profile info from backend controller.");
+        }
+    } catch (error) {
+        console.error("Error communicating with backend profile system:", error);
+    }
+}
+
 async function deleteStudentObj(id) {
     if (!confirm(`Purge Student [${id}] from live operational databases?`)) return;
     try {
@@ -464,18 +586,24 @@ async function loadClubs() {
         if (response.ok) {
             const data = await response.json();
             tbody.innerHTML = '';
+            
             data.forEach(club => {
                 const id = club.clubId || club.club_id;
                 const name = club.clubName || club.club_name;
-                const desc = club.description || 'No descriptive details declared.';
+                const memberCount = club.memberCount || club.scholarsCount || 0;
 
                 const tr = document.createElement('tr');
+                tr.style.borderBottom = "1px solid #e2e8f0";
+                
                 tr.innerHTML = `
-                    <td><strong>${id}</strong></td>
-                    <td>${name}</td>
-                    <td>${desc}</td>
-                    <td class="center-text">
-                        <button class="btn btn-outline" style="color:var(--danger); border-color:var(--danger); padding:4px 8px;" onclick="deleteClubObj('${id}')"><i class="fas fa-trash"></i></button>
+                    <td style="padding: 12px; text-align: left; font-weight: 600;">${name}</td>
+                    
+                    <td style="padding: 12px; text-align: left;">${memberCount} Members</td>
+                    
+                    <td style="padding: 12px; text-align: center;" class="center-text">
+                        <button class="btn btn-outline" style="color:var(--danger); border-color:var(--danger); padding:4px 8px;" onclick="deleteClubObj('${id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -489,23 +617,19 @@ async function saveClub() {
     const clubNameInput = document.getElementById('club-name');
     const clubStatusInput = document.getElementById('club-status');
 
-
     if (!clubIdInput || !clubNameInput || !clubStatusInput) {
         console.error("HTML ID Mismatch! Check your id attributes.");
         return alert("Developer Error: One of the HTML element IDs ('club-id', 'club-name', 'club-status') was not found!");
     }
 
-    const id = clubIdInput.value.trim();
     const name = clubNameInput.value.trim();
     const status = clubStatusInput.value.trim();
 
-    if (!id || !name) { 
-        return alert("Please fill out both the Club ID and Club Name, bro!"); 
+    if (!name) { 
+        return alert("Please fill out the Club Name, bro!"); 
     }
 
-
     const payload = { 
-        club_id: id, 
         clubName: name,     
         status: status      
     };
@@ -1237,7 +1361,7 @@ async function fetchAllCampusClubs() {
             const clubs = await res.json();
             grid.innerHTML = clubs.map(club => {
                 const realClubId = club.clubId || club.club_id || club.id;
-                const realClubName = club.club_name || club.name || 'Unnamed Club';
+                const realClubName = club.club_name || club.name || club.clubName || 'Unnamed Club';
                 
                 return `
                     <div class="card" style="padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
@@ -1345,38 +1469,82 @@ async function performDeactivateClub(clubId) {
 
 
 async function loadMyProfileAndDepartments() {
-
     try {
         const res = await fetch(`${BASE_URL}/api/v1/students/me`, { headers: getAuthHeaders() });
         if (res.ok) {
             const student = await res.json();
             
-            document.getElementById('prof-fname').value = student.first_name || '';
-            document.getElementById('prof-lname').value = student.last_name || '';
-            document.getElementById('prof-email').value = student.email || '';
-            document.getElementById('prof-phone').value = student.phone || '';
-            document.getElementById('prof-year').value = student.enrolled_Year || student.enrolledYear || '';
-            document.getElementById('prof-dept').value =  student.department_id || student.departmentId || '';
+            // Map input values securely if fields exist
+            if (document.getElementById('prof-fname')) document.getElementById('prof-fname').value = student.first_name || '';
+            if (document.getElementById('prof-lname')) document.getElementById('prof-lname').value = student.last_name || '';
+            if (document.getElementById('prof-email')) document.getElementById('prof-email').value = student.email || '';
+            if (document.getElementById('prof-phone')) document.getElementById('prof-phone').value = student.phone || '';
+            if (document.getElementById('prof-year'))  document.getElementById('prof-year').value = student.enrolled_Year || student.enrolledYear || '';
+            if (document.getElementById('prof-dept'))  document.getElementById('prof-dept').value = student.department_id || student.departmentId || '';
         
-
+            // TARGETED TEXT UPDATE: Updates text node values safely without altering structural elements
             const greetingPlaceholder = document.getElementById('user-display');
             if (greetingPlaceholder) {
-                const studentName = student.first_name || "Student";
+                greetingPlaceholder.textContent = student.first_name || "Student";
+                
                 const checkSignupFlag = sessionStorage.getItem('isNewSignup');
-
-                if (checkSignupFlag === 'true') {
-                    greetingPlaceholder.parentElement.innerHTML = `Welcome, <span id="user-display">${studentName}</span>! 🎓`;
-                } else {
-                    greetingPlaceholder.parentElement.innerHTML = `Welcome back, <span id="user-display">${studentName}</span>! 🎓`;
+                const welcomePrefix = document.getElementById('welcome-prefix-text');
+                if (welcomePrefix) {
+                    welcomePrefix.textContent = (checkSignupFlag === 'true') ? "Welcome, " : "Welcome Back, ";
                 }
             }
 
+            // Sync user avatar source safely
             if (student.profilePictureUrl || student.imageUrl) {
-                document.getElementById('profile-pic-preview').src = student.profilePictureUrl || student.imageUrl;
+                const previewImg = document.getElementById('profile-pic-preview');
+                if (previewImg) {
+                    previewImg.src = student.profilePictureUrl || student.imageUrl;
+                }
             }
         }
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+        console.error("Profile view synchronization failure:", e); 
+    }
 }
+
+// ASYNCHRONOUS FILE UPLOAD STREAM ENGINE
+async function executeProfileImageUpload(inputElement) {
+    if (!inputElement.files || !inputElement.files[0]) return;
+
+    const file = inputElement.files[0];
+    const formData = new FormData();
+    formData.append('file', file); // Matches your backend multipart-file key descriptor name
+
+    try {
+        const response = await fetch(`${BASE_URL}/api/v1/students/upload-profile-pic`, {
+            method: 'POST',
+            headers: {
+                // Let the browser set the multi-part form content boundaries automatically
+                'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ''
+            },
+            body: formData
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            
+            // Capture returning uploaded image URI string path safely
+            const updatedImgUrl = result.url || result.profilePictureUrl || result.imageUrl;
+            if (updatedImgUrl) {
+                document.getElementById('profile-pic-preview').src = updatedImgUrl;
+            } else {
+                loadMyProfileAndDepartments();
+            }
+            if (typeof showToast === "function") showToast("Profile photo updated successfully! 🎉");
+        } else {
+            alert("Upload rejected by server infrastructure pipelines.");
+        }
+    } catch (err) {
+        console.error("Binary image stream processing error:", err);
+        alert("Network failure processing profile asset upload, bro!");
+    }
+}
+
 
 async function saveDepartment() {
     const deptIdInput = document.getElementById('dept-id');
@@ -1487,7 +1655,6 @@ async function loadDepartments() {
         }
 
         const departments = await response.json();
-
         tableBody.innerHTML = '';
 
         if (departments.length === 0) {
@@ -1501,19 +1668,24 @@ async function loadDepartments() {
         }
 
         departments.forEach(dept => {
+            // Safe mapping keys matching your backend payload structure
+            const dId = dept.department_id || dept.departmentId || dept.id || "N/A";
+            const dName = dept.departmentName || dept.department_name || dept.name || "Unknown Track";
+
             const row = document.createElement('tr');
             row.style.borderBottom = "1px solid #e2e8f0";
 
             row.innerHTML = `
-                <td style="padding: 12px; font-family: monospace; font-weight: bold; color: #334155;">
-                    ${dept.department_id}
+                <td style="padding: 14px 12px; font-family: monospace; font-weight: bold; color: #1e3a8a; text-align: left; vertical-align: middle;">
+                    ${dId}
                 </td>
-                <td style="padding: 12px; color: #334155;">
-                    ${dept.department_name}
+                <td style="padding: 14px 12px; color: #334155; text-align: left; font-weight: 500; vertical-align: middle;">
+                    ${dName}
                 </td>
-                <td style="padding: 12px; text-align: right; display: flex; gap: 8px; justify-content: flex-end;">
-                    <button class="btn btn-sm btn-outline" onclick="populateFormForEdit('${dept.department_id}', '${dept.department_name}')" style="padding: 4px 8px; font-size: 0.8rem; cursor: pointer;">
-                        <i class="fas fa-edit"></i> Edit
+                <td style="padding: 14px 12px; text-align: right; vertical-align: middle;">
+                    <button onclick="populateFormForEdit('${dId}', '${dName.replace(/'/g, "\\'")}')" 
+                            style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; font-size: 0.85rem; cursor: pointer; color: white !important; background-color: var(--cinec-sky) !important; border: none !important; border-radius: 6px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: opacity 0.2s;">
+                        <i class="fas fa-edit" style="color: white !important;"></i> Edit Track
                     </button>
                 </td>
             `;
@@ -1531,7 +1703,6 @@ async function loadDepartments() {
     }
 }
 
-
 function populateFormForEdit(department_id, department_name) {
     const deptIdInput = document.getElementById('dept-id');
     const deptNameInput = document.getElementById('dept-name');
@@ -1539,51 +1710,121 @@ function populateFormForEdit(department_id, department_name) {
     if (deptIdInput && deptNameInput) {
         deptIdInput.value = department_id;
         deptNameInput.value = department_name;
-        showToast(`Selected ${id} for layout update context.`);
+        showToast(`Selected ${department_id} for layout update context.`);
     }
 }
 
 async function updateMyProfileDetails() {
+    // 1. Gather all the input values directly from your profile form IDs
+    const studentId = document.getElementById('prof-Id')?.value.trim();
+    const password = document.getElementById('prof-pwd')?.value;
+    const firstName = document.getElementById('prof-fname')?.value.trim();
+    const lastName = document.getElementById('prof-lname')?.value.trim();
+    const email = document.getElementById('prof-email')?.value.trim();
+    const phone = document.getElementById('prof-phone')?.value.trim();
+    const enrolledYear = parseInt(document.getElementById('prof-year')?.value) || 0;
+    const departmentId = document.getElementById('prof-dept')?.value.trim();
+
+    // 2. Local verification interceptor preventing malformed data streams
+    if (!studentId) {
+        alert("System Mapping Failure: Active student identity reference is missing.");
+        return;
+    }
+    if (!firstName || !lastName) {
+        alert("Validation Error: First Name and Last Name fields are required parameters.");
+        return;
+    }
+
+    // 3. FIXED: Structured payload matching your backend's Snake Case serialization properties
     const payload = {
-        firstName: document.getElementById('prof-fname').value.trim(),
-        lastName: document.getElementById('prof-lname').value.trim(),
-        email: document.getElementById('prof-email').value.trim(),
-        phone: document.getElementById('prof-phone').value.trim(),
-        enrolled_Year: parseInt(document.getElementById('prof-year').value),
-        department_id: document.getElementById('prof-dept').value
+        student_id: studentId,
+        student_pwd: (password === "••••••••" || !password) ? "" : password, // Send blank if unchanged to trigger your backend check
+        first_name: firstName,
+        last_name: lastName,
+        email: email || "",
+        phone: phone || "",
+        enrolled_Year: enrolledYear,
+        department_id: departmentId || ""
     };
+
+    console.log("Dispatching profile modification transaction object stream:", payload);
+
     try {
-        const res = await fetch(`${BASE_URL}/api/v1/students/me`, {
+        // 4. Dispatch the payload to your existing Spring Boot PUT mapping route
+        const response = await fetch(`${BASE_URL}/api/v1/students/me`, {
             method: 'PUT',
-            headers: getAuthHeaders(),
+            headers: getAuthHeaders(), // Secure headers appending Authorization: Bearer JWT
             body: JSON.stringify(payload)
         });
-        if (res.ok) showToast("Profile variables successfully committed to live clusters! Update clean.");
-        else showToast("Information update refused.");
-    } catch (e) { console.error(e); }
+
+        if (response.ok || response.status === 200) {
+            showToast("Your profile updates have been successfully written to the database!");
+            
+            // Sync up the text welcome header layout banner dynamically on success
+            if (document.getElementById('user-display')) {
+                document.getElementById('user-display').innerText = `${firstName} ${lastName}`;
+            }
+        } else {
+            const serverError = await response.text();
+            console.error(`Backend transactional processing error (${response.status}):`, serverError);
+            alert(`Server Rejected Profile Save: ${serverError}`);
+        }
+    } catch (error) {
+        console.error("Network communication link failure updating profile metadata:", error);
+        alert("Network communication exception: Core server could not be reached.");
+    }
 }
 
 
 async function handleProfileImageUpload(event) {
-    console.log("Profile upload fired.");
+    console.log("Profile upload triggered. Initiating network sync stream...");
+    
     const fileInput = event.target;
     const file = fileInput.files[0];
+    const currentUserId = localStorage.getItem('currentUserId'); 
 
-    if (file) {
-        const reader = new FileReader();
+    if (!file) return;
+    if (!currentUserId) {
+        alert("Authentication Error: No active student session detected.");
+        return;
+    }
 
-        reader.onload = function(e) {
-            const imgPreview = document.getElementById('profile-pic-preview');
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const imgPreview = document.getElementById('profile-pic-preview');
+        if (imgPreview) {
+            imgPreview.src = e.target.result;
+        }
+    };
+    reader.readAsDataURL(file);
 
-            if (imgPreview) {
-                imgPreview.src = e.target.result;
-                
-                if (typeof showToast === "function") {
-                    showToast("Profile image loaded successfully!", "success");
-                }
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('studentId', currentUserId);
+
+    try {
+        const headers = getAuthHeaders();
+        delete headers['Content-Type']; 
+
+        const response = await fetch(`${BASE_URL}/api/v1/students/profile/image`, {
+            method: 'POST', 
+            headers: headers,
+            body: formData
+        });
+
+        if (response.ok) {
+            const uploadedImageUrl = await response.text();
+            console.log("Image safely written to backend context storage:", uploadedImageUrl);
+            
+            if (typeof showToast === "function") {
+                showToast("Profile picture synchronized with server successfully!", "success");
             }
-        };
-        reader.readAsDataURL(file);
+        } else {
+            console.error(`Backend storage transmission failed with status: ${response.status}`);
+            alert("Server Error: Failed to save profile picture to database.");
+        }
+    } catch (error) {
+        console.error("Network interface communication failure upload processing streams:", error);
     }
 }
 
