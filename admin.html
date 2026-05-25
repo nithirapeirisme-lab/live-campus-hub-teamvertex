@@ -356,6 +356,468 @@
         </div>
 
         <div id="admin-clubs" class="staff-section" style="display:none;">
+    <div class="grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 25px;">
+        <div class="card">
+            <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Charter New Campus Society</h3>
+            
+            <input type="hidden" id="club-id" value="">
+
+            <div class="form-group">
+                <label>Club Name</label>
+                <input type="text" id="club-name" placeholder="e.g., Computer Science Guild" class="form-input">
+            </div>
+            <div class="form-group">
+                <label>Status (Active or Not)</label>
+                <input type="text" id="club-status" placeholder="e.g., true or false" class="form-input">
+            </div>
+            <div style="display:flex; gap:8px; margin-top:10px;">
+                <button class="btn btn-primary" style="flex:1; padding:12px; font-weight:bold;" onclick="saveClub()">Save Club</button>
+                <button class="btn btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="updateClub()">Update Club</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Active Campus Societies Directory</h3>
+            <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: white;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                            <th style="padding: 12px; color: var(--cinec-navy); text-align: left;">Society Domain Name</th>
+                            <th style="padding: 12px; color: var(--cinec-navy); text-align: left;">Scholars Count</th>
+                            <th style="padding: 12px; color: var(--cinec-navy);" class="action-th">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clubs-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <div id="admin-locations" class="staff-section" style="display:none;">
+            <div class="grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 25px;">
+                <div class="card">
+                    <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Deploy New Campus Location Hub</h3>
+                    <div class="form-group">
+                        <label>Location ID</label>
+                        <input type="text" id="loc-id" placeholder="e.g., GYM_01" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Location Name</label>
+                        <input type="text" id="loc-name" placeholder="e.g., Main Fitness Facility Complex" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Capacity</label>
+                        <input type="text" id="loc-capacity" placeholder="e.g., 150" class="form-input">
+                    </div>
+                    
+                    <div style="display:flex; gap:8px; margin-top:10px;">
+                        <button class="btn btn-primary" style="flex:1; padding:12px; font-weight:bold;" onclick="saveLocationObj()">Save Location</button>
+                        <button class="btn btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="updateLocationObj()">Update Details</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Tracked Infrastructure Location Matrices</h3>
+                    <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: white;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                    <th style="padding: 12px; color: var(--cinec-navy);">Location ID</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy);">Landmark Name</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy);">Capacity</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy);">Live Operational Status</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy);" class="action-th">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="locations-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<button class="chatbot-toggle-btn" onclick="toggleChatbotOverlayWindow()"><i class="fas fa-comment-dots"></i></button>
+
+<div class="chatbot-window" id="chatbot-window-panel">
+    <div class="chat-header">
+        <span><i class="fas fa-robot"></i> CINEC Assistant AI</span>
+        <span style="cursor:pointer;" onclick="toggleChatbotOverlayWindow()"><i class="fas fa-times"></i></span>
+    </div>
+    <div class="chat-body" id="chat-messages-container">
+        <div class="chat-bubble bot">Hello bro! I am your central campus support assistant. How can I assist your presentation layout tasks today?</div>
+    </div>
+    <div class="chat-footer">
+        <input type="text" id="chat-query-input" placeholder="Ask your question, bro..." class="chat-input" onkeydown="if(event.key === 'Enter') dispatchChatbotQueryMessage()">
+        <button class="chat-send-btn" onclick="dispatchChatbotQueryMessage()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+
+
+
+<script src="script.js"></script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CINEC HUB | Administration Control Center</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .chatbot-toggle-btn { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; border-radius: 50%; background: var(--cinec-sky); color: white; border: none; font-size: 1.6rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: transform 0.2s; }
+        .chatbot-toggle-btn:hover { transform: scale(1.05); }
+        .chatbot-window { position: fixed; bottom: 95px; right: 25px; width: 380px; height: 500px; background: white; border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.2); display: none; flex-direction: column; overflow: hidden; z-index: 9999; border: 1px solid #e2e8f0; }
+        .chat-header { background: var(--cinec-navy); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+        .chat-body { flex: 1; padding: 15px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
+        .chat-bubble { max-width: 80%; padding: 10px 14px; border-radius: 14px; font-size: 0.9rem; line-height: 1.4; }
+        .chat-bubble.user { background: var(--cinec-sky); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .chat-bubble.bot { background: #e2e8f0; color: var(--text-main); align-self: flex-start; border-bottom-left-radius: 2px; }
+        .chat-footer { padding: 10px; border-top: 1px solid #e2e8f0; display: flex; gap: 8px; background: white; }
+        .chat-input { flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; font-size: 0.9rem; }
+        .chat-send-btn { background: var(--cinec-navy); color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; }
+        .form-row { display: flex; gap: 12px; margin-bottom: 12px; }
+        .form-row .form-group { flex: 1; margin-bottom: 0; }
+        .action-th { width: 100px; text-align: center; }
+        .center-text { text-align: center; }
+    </style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<div class="dashboard-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-shield-alt"></i> <span>CINEC Admin</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" onclick="showStaffSection('admin-overview', this)"><i class="fas fa-chart-line"></i> Overview</a>
+            <a href="#" class="nav-item" onclick="showStaffSection('admin-users', this)"><i class="fas fa-users"></i> User Management</a>
+            <a href="#" class="nav-item" onclick="showStaffSection('admin-facilities', this)"><i class="fas fa-building"></i> Facilities & Events</a>
+            <a href="#" class="nav-item" onclick="showStaffSection('admin-rewards', this)"><i class="fas fa-gift"></i> Rewards Matrix</a>
+            <a href="#" class="nav-item" onclick="showStaffSection('admin-transit', this)"><i class="fas fa-bus"></i> Transit Management</a>
+            <a href="#" class="nav-item" onclick="showStaffSection('admin-clubs', this)"><i class="fas fa-users-cog"></i> Club Hub</a>
+            <a href="#" class="nav-item" onclick="showStaffSection('admin-locations', this)"><i class="fas fa-map-marked-alt"></i> Location Control</a>
+            <a href="#" class="nav-item" onclick="logoutProcess()" style="margin-top:auto; color:#ff4d4d;"><i class="fas fa-sign-out-alt"></i> Logout Center</a>
+        </nav>
+    </aside>
+
+
+
+    <main class="main-content">
+        <header class="content-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px;">
+            <h2 style="color: var(--cinec-navy);">CINEC CAMPUS HUB | System Controller</h2>
+            <div class="admin-badge" style="background: var(--cinec-navy); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;">Root Administrator</div>
+        </header>
+
+        <div id="admin-overview" class="staff-section">
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                <div class="stat-card" style="display: flex; align-items: center; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <div style="margin-right:15px; background:#e0f2fe; padding:12px; border-radius:50%; color:var(--cinec-sky);"><i class="fas fa-user-graduate" style="font-size:1.5rem;"></i></div>
+                    <div>
+                        <h4 style="color:var(--text-muted); font-size:0.8rem; text-transform: uppercase;">Active Students</h4>
+                        <p id="metric-active-students" style="font-size: 1.8rem; font-weight: 800; color: var(--cinec-navy);">0</p>
+                    </div>
+                </div>
+                <div class="stat-card" style="display: flex; align-items: center; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <div style="margin-right:15px; background:#dcfce7; padding:12px; border-radius:50%; color:var(--success);"><i class="fas fa-university" style="font-size:1.5rem;"></i></div>
+                    <div>
+                        <h4 style="color:var(--text-muted); font-size:0.8rem; text-transform: uppercase;">Total Departments</h4>
+                        <p id="metric-departments" style="font-size: 1.8rem; font-weight: 800; color: var(--cinec-navy);">0</p>
+                    </div>
+                </div>
+                <div class="stat-card" style="display: flex; align-items: center; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <div style="margin-right:15px; background:#fef3c7; padding:12px; border-radius:50%; color:#d97706;"><i class="fas fa-user-shield" style="font-size:1.5rem;"></i></div>
+                    <div>
+                        <h4 style="color:var(--text-muted); font-size:0.8rem; text-transform: uppercase;">Staff Registered</h4>
+                        <p id="metric-staff" style="font-size: 1.8rem; font-weight: 800; color: var(--cinec-navy);">0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div id="admin-users" class="staff-section" style="display:none;">
+            <div class="grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 25px;">
+                <div class="card">
+                    <h3 style="color: var(--cinec-navy); margin-bottom: 15px;" id="student-form-title">Add New Student Profile</h3>
+                    <div class="form-group">
+                        <label>Student System ID</label>
+                        <input type="text" id="stu-id" placeholder="e.g., STU_001" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" id="stu-fname" placeholder="e.g., Sachini" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" id="stu-lname" placeholder="e.g., Silva" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="text" id="stu-password" placeholder="e.g.@Sachini123" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="stu-email" placeholder="name@cinec.edu" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="email" id="stu-phone" placeholder="0716500760" class="form-input">
+                    </div>
+                    <!-- Added missing fields -->
+                    <div class="form-group">
+                        <label>Enrolled Year</label>
+                        <input type="number" id="stu-year" placeholder="e.g., 2026" class="form-input" value="2026">
+                    </div>
+                    <div class="form-group">
+                        <label>Department ID</label>
+                        <input type="text" id="stu-dept" placeholder="e.g., COM_01" class="form-input">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%; padding:12px; font-weight:bold; margin-top:10px;" onclick="saveStudent()">Commit Student Data</button>
+                    <button class="btn btn-outline" onclick="openBatchIngestionModal()" style="padding: 10px 16px; font-weight: 500; background: #f8fafc; color: #00aeef; border: 1px solid #cbd5e1; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-layer-group"></i> Multiple Batch Ingestion
+                    </button>
+                </div>
+                <div class="card">
+                    <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Active System Student Directory</h3>
+                    <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: white;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                    <th style="padding: 12px; color: var(--cinec-navy);">ID</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy);">Full Name</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy);">Email Path</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy);" class="action-th">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="admin-facilities" class="staff-section" style="display:none;">
+            <div class="card" style="margin-bottom: 25px;">
+                <h3 style="color: var(--cinec-navy); margin-bottom: 15px;" id="dept-form-title">Campus Department Structures</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Department ID</label>
+                        <input type="text" id="dept-id" placeholder="e.g., COM_01" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Department Title Name</label>
+                        <input type="text" id="dept-name" placeholder="e.g., Faculty of Computing" class="form-input">
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:15px; margin-bottom: 20px;">
+                    <button class="btn btn-primary" style="flex:1; padding:12px; font-weight:bold;" onclick="saveDepartment()">Save Track</button>
+                    <button class="btn btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="updateDepartment()">Update Parameters</button>
+                </div>
+                
+                <div class="card">
+                    <h3>Registered Campus Tracks Block</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                        <thead>
+                            <tr style="background: #f8fafc; text-align: left;">
+                                <th style="padding: 12px; color: #1e3a8a;">Department ID</th>
+                                <th style="padding: 12px; color: #1e3a8a;">Department Name</th>
+                                <th style="padding: 12px; color: #1e3a8a; text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="department-table-body">
+                            <tr>
+                                <td colspan="3" style="text-align: center; padding: 20px; color: #64748b;">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading campus tracks...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+
+            <div class="card">
+                <h3 style="color: var(--cinec-navy); margin-bottom: 15px;" id="event-form-title">Campus Event Orchestrator</h3>
+                <div class="form-row">
+                    
+
+                    <div class="form-group">
+                        <label>Event Name Title</label>
+                        <input type="text" id="event-name" placeholder="e.g., Padura Music Festival" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Scheduled Date</label>
+                        <input type="date" id="event-date" class="form-input">
+                    </div>
+                </div>
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label>Scheduled Time</label>
+                        <input type="time" id="event-time" class="form-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Venue</label>
+                        <input type="text" id="event-location" placeholder="e.g., Main Hall Auditorium" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Organizing Comitee</label>
+                        <input type="text" id="event-org" class="form-input">
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:15px; margin-bottom: 20px;">
+                    <button class="btn btn-primary" style="flex:1; padding:12px; font-weight:bold;" onclick="saveEvent()">Save Event</button>
+                    <button class="btn btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="updateEvent()('${event.eventId}')">Push Modified Updates</button>
+                </div>
+
+                <h4 style="color: var(--cinec-navy); margin-bottom: 10px; font-size:1rem;">Staged Campus Events Calendar</h4>
+                <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: white;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                        <thead>
+                            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                <th style="padding: 12px; color: var(--cinec-navy);">ID</th>
+                                <th style="padding: 12px; color: var(--cinec-navy);">Event Name</th>
+                                <th style="padding: 12px; color: var(--cinec-navy);">Date</th>
+                                <th style="padding: 12px; color: var(--cinec-navy);">Time</th>
+                                <th style="padding: 12px; color: var(--cinec-navy);">Club / Host</th>
+                                <th style="padding: 12px; color: var(--cinec-navy);">Location</th>
+                                <th style="padding: 12px; color: var(--cinec-navy);" class="action-th">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="facilities-table-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div id="admin-rewards" class="staff-section" style="display:none;">
+            <div class="grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 25px;">
+                <div class="card">
+                    <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Deploy Loyalty Reward</h3>
+                    <div class="form-group">
+                        <label>Reward ID</label>
+                        <input type="text" id="reward-id" placeholder="e.g., REW_09" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Reward Name</label>
+                        <input type="text" id="reward-name" placeholder="e.g., 20% discount" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Points required</label>
+                        <input type="number" id="reward-points" placeholder="e.g., 200" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Discount Value Percentage (%)</label>
+                        <input type="number" id="reward-discount" placeholder="e.g., 10" class="form-input">
+                    </div>
+                    <button class="btn btn-primary" style="width:100%; padding:12px; font-weight:bold; margin-top:10px;" onclick="saveRewardListing()">Save Reward</button>
+                    <button class="btn btn-outline" style="width:100%; padding:12px; font-weight:bold; margin-top:10px; border: 1px solid var(--cinec-sky); color: var(--cinec-sky);" onclick="editRewardObj()">Update Reward</button>
+                </div>
+
+
+                <div class="card">
+                    <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Available Loyalty Rewards Items</h3>
+                    <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: white;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left; width: 15%;">Reward ID</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left; width: 25%;">Reward Name</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left; width: 20%;">Points Required</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left; width: 20%;">Discount Value Percentage</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: center; width: 15%;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rewards-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-transit" class="staff-section" style="display:none;">
+            <div class="grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 25px;">
+                <div class="card">
+                    <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Configure Fleet Shuttle</h3>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label>Bus ID</label>
+                        <input type="text" id="config-bus-id" class="form-input" placeholder="e.g., BUS_02">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label>Bus Number</label>
+                        <input type="text" id="config-bus-number" class="form-input" placeholder="e.g., WP NB-5241">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label>Current Status</label>
+                        <select id="config-bus-status" class="form-input">
+                            <option value="ACTIVE">ON_TIME</option>
+                            <option value="DELAYED">DELAYED</option>
+                            <option value="MAINTENANCE">CANCELLED</option>
+                            <option value="MAINTENANCE">ARRIVED</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label>Departure Location</label>
+                        <input type="text" id="config-bus-departure" class="form-input">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label>Arrival Location</label>
+                        <input type="text" id="config-bus-arrival" class="form-input">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 12px;">
+                        <label>Departure Time</label>
+                        <input type="text" id="config-bus-deptime" class="form-input" placeholder="e.g., 07:30 AM">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 15px;">
+                        <label>Arrival Time</label>
+                        <input type="text" id="config-bus-arrtime" class="form-input" placeholder="e.g., 08:45 AM">
+                    </div>
+                    <button class="btn btn-primary" onclick="saveBus()">Save Configuration</button>
+                </div>
+                <div class="card">
+                    <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Active Transit Telemetry Grid</h3>
+                    <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: white;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left;">Bus ID</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left;">Bus Number</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left;">Status</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left;">Departure</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left;">Arrival</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left;">Departure Time</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: left;">Arrival Time</th>
+                                    <th style="padding: 12px; color: var(--cinec-navy); text-align: center;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transit-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="admin-clubs" class="staff-section" style="display:none;">
             <div class="grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 25px;">
                 <div class="card">
                     <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Charter New Campus Society</h3>
