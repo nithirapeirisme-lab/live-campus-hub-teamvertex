@@ -1,6 +1,7 @@
 package com.campushub.campus_hub.controller;
 
 import com.campushub.campus_hub.dto.StudentDTO;
+import com.campushub.campus_hub.exceptions.StudentNotFoundException;
 import com.campushub.campus_hub.service.StudentRewardService;
 import com.campushub.campus_hub.service.StudentService;
 import jakarta.validation.Valid;
@@ -58,12 +59,25 @@ public class StudentController {
     }
 
     @PostMapping("/profile/image")
-    public ResponseEntity<String> uploadProfileImage(@RequestParam("file") MultipartFile file,
-                                                     Authentication authentication) {
-        String studentId = authentication.getName();
-        String image = studentService.updateProfileImage(studentId, file);
+    public ResponseEntity<String> uploadProfileImage(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("studentId") String studentId) {
 
-        return ResponseEntity.ok(image);
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("Uploaded file stream is empty.");
+        }
+
+        try {
+            String imageRelativePath = studentService.updateProfileImage(studentId, file);
+            return ResponseEntity.ok(imageRelativePath);
+
+        } catch (StudentNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("File processing failure: " + e.getMessage());
+        }
     }
 
     @PostMapping("/apply-discount")

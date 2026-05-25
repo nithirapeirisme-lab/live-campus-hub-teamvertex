@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 
+
 @Table(name = "rewards")
 public class RewardEntity {
     @Id

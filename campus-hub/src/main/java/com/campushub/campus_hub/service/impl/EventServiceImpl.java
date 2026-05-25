@@ -11,8 +11,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +25,6 @@ public class EventServiceImpl implements EventService {
     public void saveEvent(EventDTO event) {
         event.setEvent_id(UtilityData.generateEvent_id());
         eventDao.save(entityDTOConversion.toEventEntity(event));
-
     }
 
     @Override
@@ -41,7 +38,6 @@ public class EventServiceImpl implements EventService {
         existingEvent.get().setEvent_time(event.getEvent_time());
         existingEvent.get().setLocation_name(event.getLocation_name());
         existingEvent.get().setClub_name(event.getClub_name());
-
     }
 
     @Override

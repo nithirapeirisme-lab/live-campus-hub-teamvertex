@@ -26,6 +26,13 @@ public class RewardController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PutMapping
+    public ResponseEntity<Void> updateReward(@Valid @RequestBody RewardDTO rewardDTO){
+        rewardService.updateReward(rewardDTO);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+    }
+
     @DeleteMapping("/{rewardId}")
     public ResponseEntity<Void> deleteReward(@PathVariable String rewardId){
         try{

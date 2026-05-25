@@ -50,16 +50,19 @@ public class StudentServiceImpl implements StudentService {
         if (!foundStudent.isPresent()) {
             throw new StudentNotFoundException("Student not found");
         }
-
-        foundStudent.get().setStudent_id(student.getStudent_id());
-        foundStudent.get().setStudent_pwd(student.getStudent_pwd());
-        foundStudent.get().setFirst_name(student.getFirst_name());
-        foundStudent.get().setLast_name(student.getLast_name());
-        foundStudent.get().setPhone(student.getPhone());
-        foundStudent.get().setEmail(student.getEmail());
-        foundStudent.get().setEnrolled_Year(student.getEnrolled_Year());
-        foundStudent.get().setDepartment_id(student.getDepartment_id());
-
+        StudentEntity existingEntity = foundStudent.get();
+        existingEntity.setFirst_name(student.getFirst_name());
+        existingEntity.setLast_name(student.getLast_name());
+        existingEntity.setPhone(student.getPhone());
+        existingEntity.setEmail(student.getEmail());
+        existingEntity.setEnrolled_Year(student.getEnrolled_Year());
+        existingEntity.setDepartment_id(student.getDepartment_id());
+        if (student.getStudent_pwd() != null && !student.getStudent_pwd().trim().isEmpty() && !student.getStudent_pwd().equals("••••••••")) {
+            existingEntity.setStudent_pwd(passwordEncoder.encode(student.getStudent_pwd().trim()));
+        } else {
+            System.out.println("Update payload password is empty. Retaining existing database hash structure.");
+        }
+        studentDao.save(existingEntity);
     }
 
     @Override
@@ -74,14 +77,33 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public String updateProfileImage(String studentId, MultipartFile file) {
-        StudentEntity studentEntity = studentDao.findById(studentId).
-                orElseThrow(() -> new StudentNotFoundException("Student not found with id: " + studentId));
+        StudentEntity studentEntity = studentDao.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found with id: " + studentId));
 
-        String fileName = fileStorageService.saveProfileImage(file);
+        String fileName = saveProfileImage(file);
 
-        studentEntity.setProfileImageUrl(("/uploads/profiles/" + fileName));
+        studentEntity.setProfileImageUrl("/uploads/profiles/" + fileName);
         studentDao.save(studentEntity);
         return studentEntity.getProfileImageUrl();
+    }
+
+    private String saveProfileImage(MultipartFile file) {
+        try {
+            String uploadDir = "uploads/profiles/";
+            java.io.File folder = new java.io.File(uploadDir);
+
+            if (!folder.exists()) {
+                folder.mkdirs();
+            }
+            String uniqueFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            java.nio.file.Path targetPath = java.nio.file.Paths.get(uploadDir + uniqueFileName);
+
+            java.nio.file.Files.write(targetPath, file.getBytes());
+            return uniqueFileName;
+
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("Failed to save image bytes down to disk partition", e);
+        }
     }
 
     @Override

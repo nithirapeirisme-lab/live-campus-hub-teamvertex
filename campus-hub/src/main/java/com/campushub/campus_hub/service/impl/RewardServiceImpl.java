@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -43,6 +44,19 @@ public class RewardServiceImpl implements RewardService {
             throw new RewardNotFoundException("Reward not found");
         }
         rewardDao.deleteById(rewardId);
+    }
+
+    @Override
+    public void updateReward(RewardDTO rewardDTO) {
+        Optional<RewardEntity> rewardOpt = rewardDao.findById(rewardDTO.getReward_id());
+        if (!rewardOpt.isPresent()) {
+            throw new RewardNotFoundException("Reward not found");
+        }
+        RewardEntity reward = rewardOpt.get();
+        reward.setReward_name(rewardDTO.getReward_name());
+        reward.setReward_points(rewardDTO.getReward_points());
+        reward.setDiscount_percentage(rewardDTO.getDiscount_percentage());
+        rewardDao.save(reward);
     }
 
     @Override
