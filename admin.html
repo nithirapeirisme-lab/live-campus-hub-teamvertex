@@ -158,9 +158,42 @@
                     </div>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:15px; margin-bottom: 20px;">
-                    <button class="btn btn-primary" style="flex:1; padding:12px; font-weight:bold;" onclick="saveDepartment()">Save Track</button>
-                    <button class="btn btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="updateDepartment()">Update Parameters</button>
+                    <button class="btn btn-primary" style="flex:1; padding:12px; font-weight:bold;" onclick="saveDepartment()">Save Department</button>
+                    <button class="btn btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="updateDepartment()">Update Department</button>
                 </div>
+                <style>
+                    .btn {
+                        padding: 10px 20px;
+                        border-radius: var(--radius, 6px);
+                        font-size: 0.95rem;
+                        font-weight: bold;
+                        cursor: pointer;
+                        border: 2px solid transparent;
+                        transition: all 0.2s ease;
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
+                    .btn-primary {
+                        background-color: var(--cinec-navy, #1e3a8a);
+                        color: white;
+                    }
+                    .btn-primary:hover {
+                        opacity: 0.9;
+                        transform: translateY(-1px);
+                    }
+
+                    .btn-outline {
+                        background-color: transparent;
+                        border-color: var(--cinec-sky, #00aeef);
+                        color: var(--cinec-sky, #00aeef);
+                    }
+                    .btn-outline:hover {
+                        background-color: var(--cinec-sky, #00aeef);
+                        color: white;
+                    }
+                </style>
                 
                 <div class="card">
                     <h3>Registered Campus Tracks Block</h3>
@@ -223,12 +256,11 @@
                     <button class="btn btn-outline" style="flex:1; padding:12px; font-weight:bold;" onclick="updateEvent()('${event.eventId}')">Push Modified Updates</button>
                 </div>
 
-                <h4 style="color: var(--cinec-navy); margin-bottom: 10px; font-size:1rem;">Staged Campus Events Calendar</h4>
+                <h4 style="color: var(--cinec-navy); margin-bottom: 10px; font-size:1rem;">Campus Events Calendar</h4>
                 <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: white;">
                     <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
                         <thead>
                             <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                                <th style="padding: 12px; color: var(--cinec-navy);">ID</th>
                                 <th style="padding: 12px; color: var(--cinec-navy);">Event Name</th>
                                 <th style="padding: 12px; color: var(--cinec-navy);">Date</th>
                                 <th style="padding: 12px; color: var(--cinec-navy);">Time</th>
@@ -358,7 +390,7 @@
         <div id="admin-clubs" class="staff-section" style="display:none;">
     <div class="grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 25px;">
         <div class="card">
-            <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Charter New Campus Society</h3>
+            <h3 style="color: var(--cinec-navy); margin-bottom: 15px;">Save New Campus Society</h3>
             
             <input type="hidden" id="club-id" value="">
 
@@ -382,8 +414,8 @@
                 <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
                     <thead>
                         <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                            <th style="padding: 12px; color: var(--cinec-navy); text-align: left;">Society Domain Name</th>
-                            <th style="padding: 12px; color: var(--cinec-navy); text-align: left;">Scholars Count</th>
+                            <th style="padding: 12px; color: var(--cinec-navy); text-align: left;">Club Name</th>
+                            <th style="padding: 12px; color: var(--cinec-navy); text-align: left;">Status</th>
                             <th style="padding: 12px; color: var(--cinec-navy);" class="action-th">Actions</th>
                         </tr>
                     </thead>
